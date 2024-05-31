@@ -1,0 +1,59 @@
+
+<app-confirm-modal (confirmed)="handleConfirmation()" [inputData]="inputData" [visible]="visible" ></app-confirm-modal>
+<app-loader [visible]="loading" ></app-loader>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5> <span *ngIf="new">{{'CREATE NEW'  }}</span> <span
+                        *ngIf="!new">{{'Edit'  }}</span> {{'Restaurant'  }} </h5>
+            </div>
+            <div class="card-body reset-table p-t-0">
+                <h4 class="sub-title">Driver Details</h4>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <label>{{'Full Name'  }}</label>
+                        <input type="text" [(ngModel)]="fullname" class="form-control"
+                            [placeholder]="('Full Name'  ) || '&nbsp;'  ">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label>{{'Email'  }}</label>
+                        <input type="email" [disabled]="!new" [(ngModel)]="email" class="form-control"
+                            [placeholder]="('Email'  ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6" *ngIf="new">
+                        <label>{{'Password'  }}</label>
+                        <input type="password" [(ngModel)]="password" class="form-control"
+                            [placeholder]="('Password'  ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6">
+                        <label>{{'Contact No'  }}</label>
+                        <input type="number" [(ngModel)]="phone" class="form-control"
+                            [placeholder]="('Contact No' ) ||'&nbsp;'">
+                    </div>
+                </div>
+
+                <div class="form-group row p-3">
+                    <label class="col-sm-4 col-form-label">{{'Upload cover image here'  }}</label>
+                    <div class="col-sm-4">
+                        <input (change)="preview_banner($event)" type="file" class="form-control">
+                    </div>
+                    <div class="col-sm-4">
+                        <img [src]="coverImage" alt="" style="height: 100px;width: 100px;float: right;"
+                            onError="this.src='assets/icon.png'">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-danger btn-round" (click)="create()"
+                            *ngIf="new">{{'Add New Driver'  }}
+                        </button>
+                        <button class="btn btn-danger btn-round" (click)="update()" *ngIf="!new">
+                            {{'Update Driver'  }} </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

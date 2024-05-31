@@ -1,0 +1,54 @@
+.mat-stepper-vertical {
+    margin-top: 8px;
+  }
+  
+  .mat-mdc-form-field {
+    margin-top: 16px;
+  }
+
+  .example-form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .example-full-width {
+    width: 100%;
+  }
+  
+  td {
+    padding: 8px;
+  }
+  .preview {
+    max-width: 200px;
+    vertical-align: middle;
+  }  
+
+  .price {
+    font-weight: bold;
+  }
+
+  .content-container {
+    display: flex; /* Arrange image and text side-by-side */
+    align-items: center; /* Vertically center content */
+  }
+  .text-container {
+    margin-left: 20px; /* Add margin between image and text */
+  }
+  
+  .text-container p {
+    margin-bottom: 5px; /* Add spacing between paragraphs */
+  }
+  .example-card {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Center horizontally */
+  }
+  .my-img {
+    width: 150px; /* Adjust image width as needed */
+    border: 1px solid #c7a6a660;
+    border-radius: 10px;
+  }
+
+

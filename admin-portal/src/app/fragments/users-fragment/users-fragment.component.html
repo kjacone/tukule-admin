@@ -1,0 +1,99 @@
+<c-card class="mb-4" >
+  
+    <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+      <thead class="text-nowrap text-truncate">
+        <tr>
+          <th class="bg-body-tertiary text-center">
+            <svg cIcon name="cilPeople"></svg>
+          </th>
+          <th class="bg-body-tertiary">{{user | uppercase}}S</th>
+          <th class="bg-body-tertiary text-center">Status</th>
+          <th class="bg-body-tertiary text-center">Activity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dummy">
+         
+          <td>
+            <ngx-skeleton-loader
+              count="1"
+              [theme]="{
+                'border-radius': '5px',
+                height: '10px',
+                border: '1px solid white'
+              }"
+            ></ngx-skeleton-loader>
+          </td>
+          <td>
+            <ngx-skeleton-loader
+              count="1"
+              [theme]="{
+                'border-radius': '5px',
+                height: '10px',
+                border: '1px solid white'
+              }"
+            ></ngx-skeleton-loader>
+          </td>
+          <td>
+            <ngx-skeleton-loader
+              count="1"
+              [theme]="{
+                'border-radius': '5px',
+                height: '10px',
+                border: '1px solid white'
+              }"
+            ></ngx-skeleton-loader>
+          </td>
+          <td>
+            <ngx-skeleton-loader
+              count="1"
+              [theme]="{
+                'border-radius': '5px',
+                height: '10px',
+                border: '1px solid white'
+              }"
+            ></ngx-skeleton-loader>
+          </td>
+          
+        </tr>
+  
+  
+  
+@for (user of users.slice(0, 10); track user.fname; let i = $index) {
+        <tr>
+          <td class="text-center">
+            <c-avatar [size]="'md'" [src]="user.coverImage" [status]="user.status === 'active' ? 'success' : 'danger'" />
+          </td>
+          <td>
+            <div>{{ user.fname }} {{ user.lname }}</div>
+            <div class="text-body-secondary text-nowrap">
+              <span>
+                {{ user.email }}
+              </span>
+            </div>
+          </td>
+            
+          <td class="text-center">
+            <div class="text-body-secondary text-nowrap">
+                <span>
+                  {{ user.type }}
+                </span>
+              </div>
+            <div class="d-flex justify-content-center align-items-center">
+              <c-badge class="ms-2 float-end" [color]="user.status === 'active' ? 'success' : 'danger'">
+                {{ user.status |uppercase }}
+              </c-badge>
+            </div>
+          </td>
+          <td class="text-center">
+            <div class="small text-body-secondary">Last login</div>
+            <div class="fw-semibold text-nowrap">
+              {{ user.activity.toDate() | date }}
+            </div>
+          </td>
+        
+        </tr>
+        }
+      </tbody>
+    </table>
+</c-card>

@@ -1,0 +1,35 @@
+<app-confirm-modal (confirmed)="handleConfirmation()" [inputData]="inputData" [visible]="visible" ></app-confirm-modal>
+<app-loader [visible]="loading" ></app-loader>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5>Add City </h5>
+            </div>
+            <div class="card-body reset-table p-t-0">
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <label>Address</label>
+
+                        <mat-google-maps-autocomplete country="ke"
+                        type="address"
+                        appearance="outline"
+                        (onAutocompleteSelected)="onAutocompleteSelected($event)"
+                        (onLocationSelected)="onLocationSelected($event)">
+                        </mat-google-maps-autocomplete>
+
+
+                    </div>
+                </div>
+                <div class="form-group row">
+
+                    <div class="col-sm-12">
+                        <button class="btn btn-danger btn-round" (click)="create()">Add City</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

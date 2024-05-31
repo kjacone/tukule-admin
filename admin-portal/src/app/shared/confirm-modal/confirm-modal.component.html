@@ -1,0 +1,13 @@
+<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)" alignment="center"  backdrop="static">
+    <c-modal-header>
+      <h5 cModalTitle>{{inputData.title}}</h5>
+      <button (click)="toggleLiveDemo()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>{{inputData.body}}</c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleLiveDemo()" cButton color="secondary">
+        Close
+      </button>
+      <button cButton color="primary" (click)="confirmAction()">Save changes</button>
+    </c-modal-footer>
+  </c-modal>

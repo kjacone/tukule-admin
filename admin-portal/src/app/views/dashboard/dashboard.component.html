@@ -1,0 +1,477 @@
+
+<h3 class="mb-4">{{rest.name}} Restaurant</h3>
+
+<c-row>
+  <c-col lg="6" xs="6">
+    <c-widget-stat-f
+      [title]="'Total Revenue'"
+      class="mb-3"
+      color="primary"
+      padding
+      value="KES 10,000"
+    >
+      <ng-template cTemplateId="widgetIconTemplate">
+        <svg [cIcon]="icons.cilChartPie" size="xl" width="24" src=""></svg>
+      </ng-template>
+    </c-widget-stat-f>
+  </c-col>
+
+  <c-col lg="6" xs="6">
+    <c-widget-stat-f
+      [title]="'Total Orders'"
+      class="mb-3"
+      color="warning"
+      padding
+      value="89"
+    >
+      <ng-template cTemplateId="widgetIconTemplate">
+        <svg [cIcon]="icons.cilChartPie" size="xl" width="24"></svg>
+      </ng-template>
+    </c-widget-stat-f>
+  </c-col>
+
+  <c-col lg="3" xs="6">
+    <c-widget-stat-f
+      [title]="'Supplies'"
+      class="mb-3"
+      color="primary"
+      padding
+      value="895"
+    >
+      <ng-template cTemplateId="widgetIconTemplate">
+        <svg [cIcon]="icons.cilChartPie" size="xl" width="24"></svg>
+      </ng-template>
+      <ng-template cTemplateId="widgetFooterTemplate">
+        <a class="font-weight-bold font-xs text-medium-emphasis"
+           (click)="open('supply-details',true)"
+           target="_blank">
+           <div class="d-flex align-items-center justify-content-between">
+            <span>Add Supply</span>
+            <svg [cIcon]="icons.cilArrowRight" width="16"></svg>
+          </div> 
+        </a>
+      </ng-template>
+    </c-widget-stat-f>
+  </c-col>
+  <c-col lg="3" xs="6">
+    <c-widget-stat-f
+      [title]="'Food Menus'"
+      class="mb-3"
+      color="warning"
+      padding
+      value="20"
+    >
+      <ng-template cTemplateId="widgetIconTemplate">
+        <svg [cIcon]="icons.cilChartPie" size="xl" width="24"></svg>
+      </ng-template>
+      <ng-template cTemplateId="widgetFooterTemplate">
+        <a class="font-weight-bold font-xs text-medium-emphasis"
+           href="https://coreui.io/angular"
+           target="_blank">
+          <div class="d-flex align-items-center justify-content-between">
+            <span>Add Food</span>
+            <svg [cIcon]="icons.cilArrowRight" width="16"></svg>
+          </div> 
+        </a>
+      </ng-template>
+    </c-widget-stat-f>
+  </c-col>
+ 
+ 
+  <c-col lg="3" xs="6">
+    <c-widget-stat-f
+      [title]="'Waiters'"
+      class="mb-3"
+      color="primary"
+      padding
+      value="3"
+    >
+      <ng-template cTemplateId="widgetIconTemplate">
+        <svg [cIcon]="icons.cilChartPie" size="xl" width="24"></svg>
+      </ng-template>
+      <ng-template cTemplateId="widgetFooterTemplate">
+        <a class="font-weight-bold font-xs text-medium-emphasis"
+           href="https://coreui.io/angular"
+           target="_blank">
+           <div class="d-flex align-items-center justify-content-between">
+            <span>Add Waiter</span>
+            <svg [cIcon]="icons.cilArrowRight" width="16"></svg>
+          </div> 
+        </a>
+      </ng-template>
+    </c-widget-stat-f>
+  </c-col>
+  <c-col lg="3" xs="6">
+    <c-widget-stat-f
+      [title]="'Cashiers'"
+      class="mb-3"
+      color="warning"
+      padding
+      value="2"
+    >
+      <ng-template cTemplateId="widgetIconTemplate">
+        <svg [cIcon]="icons.cilChartPie" size="xl" width="24"></svg>
+      </ng-template>
+      <ng-template cTemplateId="widgetFooterTemplate">
+        <a class="font-weight-bold font-xs text-medium-emphasis"
+           href="https://coreui.io/angular"
+           target="_blank">
+          <div class="d-flex align-items-center justify-content-between">
+            <span>Add Cashier</span>
+            <svg [cIcon]="icons.cilArrowRight" width="16"></svg>
+          </div> 
+        </a>
+      </ng-template>
+    </c-widget-stat-f>
+  </c-col>
+</c-row>
+
+<c-row>
+<c-col  lg="6" xs>
+  <app-users-fragment [user]="userType"></app-users-fragment>
+</c-col>
+ <c-col  lg="6" xs>
+  <app-orders> </app-orders>
+ </c-col>
+</c-row>
+
+<c-row >
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>
+        <c-row>
+          <c-col xs="5">
+            <h4 class="card-title mb-0" id="traffic">Orders Status</h4>
+            <div class="small text-body-secondary">January - December 2023</div>
+          </c-col>
+          <c-col xs="6">
+            <form [formGroup]="trafficRadioGroup">
+              <c-button-group class="float-end me-3" role="group">
+                <input
+                  class="btn-check"
+                  formControlName="trafficRadio"
+                  type="radio"
+                  value="Day"
+                />
+                <label
+                  (click)="setTrafficPeriod('Day')"
+                  cButton
+                  cFormCheckLabel
+                  color="secondary"
+                  variant="outline"
+                >
+                  Day
+                </label>
+                <input
+                  class="btn-check"
+                  formControlName="trafficRadio"
+                  type="radio"
+                  value="Week"
+                />
+                <label
+                  (click)="setTrafficPeriod('Week')"
+                  cButton
+                  cFormCheckLabel
+                  color="secondary"
+                  variant="outline"
+                >
+                  Week
+                </label>
+                <input
+                  class="btn-check"
+                  formControlName="trafficRadio"
+                  type="radio"
+                  value="Month"
+                />
+                <label
+                  (click)="setTrafficPeriod('Month')"
+                  cButton
+                  cFormCheckLabel
+                  color="secondary"
+                  variant="outline"
+                >
+                  Month
+                </label>
+                <input
+                  class="btn-check"
+                  formControlName="trafficRadio"
+                  type="radio"
+                  value="Year"
+                />
+                <label
+                  (click)="setTrafficPeriod('Year')"
+                  cButton
+                  cFormCheckLabel
+                  color="secondary"
+                  variant="outline"
+                >
+                  Year
+                </label>
+              </c-button-group>
+            </form>
+          </c-col>
+          <c-col xs="1">
+            <button cButton class="float-end" color="primary">
+              <svg cIcon name="cilCloudDownload"></svg>
+            </button>
+          </c-col>
+        </c-row>
+      </c-card-header>
+      <c-card-body>
+        <c-chart
+          [data]="mainChart.data"
+          [height]="300"
+          [ngStyle]="{ 'marginTop.px': 40 }"
+          [options]="mainChart.options"
+          [type]="mainChart.type"
+          (chartRef)="handleChartRef($event)"
+        >
+          Main chart
+        </c-chart>
+      </c-card-body>
+
+      <c-card-footer>
+        <c-row
+          class="text-center mb-2"
+          [xl]="3"
+          [lg]="3"
+          [sm]="2"
+          [xs]="1"
+          [gutter]="3"
+        >
+          <c-col>
+            <div class="text-body-secondary">Completed Orders</div>
+            <strong> (70%)</strong>
+            <c-progress class="mt-2" thin color="success" value="70" />
+          </c-col>
+          <c-col>
+            <div class="text-body-secondary">Pending Orders</div>
+            <div class="fw-semibold text-truncate">(20%)</div>
+            <c-progress class="mt-2" thin color="warning" value="20" />
+          </c-col>
+          <c-col>
+            <div class="text-body-secondary">Rejected Orders</div>
+            <div class="fw-semibold text-truncate">(10%)</div>
+            <c-progress class="mt-2" thin color="info" value="10" />
+          </c-col>
+        </c-row>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+
+  <c-col xs>
+    <c-card class="mt-2 mb-4">
+      <c-card-header>
+        <c-row>
+          <c-col xs="8">
+            <h4 class="card-title mb-0" id="traffic">
+              Weekly Top Selling Menus
+            </h4>
+            <div class="small text-body-secondary">April Week 4 2024</div>
+          </c-col>
+          <c-col>
+            <button cButton class="float-end" color="primary">
+              <svg cIcon name="cilCloudDownload"></svg>
+            </button>
+          </c-col>
+        </c-row>
+      </c-card-header>
+      <c-card-body>
+        <c-row>
+          <c-col>
+            <c-row>
+              <c-col xs="4">
+                <div
+                  class="border-start border-start-4 border-start-info py-1 px-3 mb-3"
+                >
+                  <div class="text-body-secondary text-truncate small">
+                    Beef Fry
+                  </div>
+                  <div class="fs-5 fw-semibold">123</div>
+                </div>
+              </c-col>
+              <c-col xs="4">
+                <div
+                  class="border-start border-start-4 border-start-success py-1 px-3 mb-3"
+                >
+                  <div class="text-body-secondary text-truncate small">
+                    Braised Pork
+                  </div>
+                  <div class="fs-5 fw-semibold">643</div>
+                </div>
+              </c-col>
+              <c-col xs="4">
+                <div
+                  class="border-start border-start-4 border-start-warning py-1 px-3 mb-3"
+                >
+                  <div class="text-body-secondary text-truncate small">
+                    Coconut Fish
+                  </div>
+                  <div class="fs-5 fw-semibold">643</div>
+                </div>
+              </c-col>
+            </c-row>
+            <hr class="mt-0" />
+            <div class="progress-group mb-4">
+              <div class="progress-group-prepend">
+                <span class="text-body-secondary small">Monday</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="info" value="34" />
+                <c-progress thin color="success" value="48" />
+                <c-progress thin color="warning" value="58" />
+              </div>
+            </div>
+            <div class="progress-group mb-4">
+              <div class="progress-group-prepend">
+                <span class="text-body-secondary small">Tuesday</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="info" value="24" />
+                <c-progress thin color="success" value="18" />
+                <c-progress thin color="warning" value="78" />
+              </div>
+            </div>
+            <div class="progress-group mb-4">
+              <div class="progress-group-prepend">
+                <span class="text-body-secondary small">Wednesday</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="info" value="34" />
+                <c-progress thin color="success" value="88" />
+                <c-progress thin color="warning" value="28" />
+              </div>
+            </div>
+            <div class="progress-group mb-4">
+              <div class="progress-group-prepend">
+                <span class="text-body-secondary small">Thursday</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="info" value="34" />
+                <c-progress thin color="success" value="48" />
+                <c-progress thin color="warning" value="58" />
+              </div>
+            </div>
+            <div class="progress-group mb-4">
+              <div class="progress-group-prepend">
+                <span class="text-body-secondary small">Friday</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="info" value="34" />
+                <c-progress thin color="success" value="48" />
+                <c-progress thin color="warning" value="58" />
+              </div>
+            </div>
+            <div class="progress-group mb-4">
+              <div class="progress-group-prepend">
+                <span class="text-body-secondary small">Saturday</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="info" value="34" />
+                <c-progress thin color="success" value="48" />
+                <c-progress thin color="warning" value="58" />
+              </div>
+            </div>
+            <div class="progress-group mb-4">
+              <div class="progress-group-prepend">
+                <span class="text-body-secondary small">Sunday</span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="info" value="34" />
+                <c-progress thin color="success" value="48" />
+                <c-progress thin color="warning" value="58" />
+              </div>
+            </div>
+           
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+
+  </c-col>
+</c-row>
+
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-body class="table-responsive">
+        <table
+          [hover]="true"
+          [responsive]="true"
+          [striped]="true"
+          align="middle"
+          cTable
+          class="mb-0 border table-container"
+        >
+          <thead class="text-nowrap text-truncate">
+            <tr>
+              <!-- <th class="bg-body-tertiary text-center">
+                <svg cIcon name="cilPeople"></svg>
+              </th> -->
+              <th class="bg-body-tertiary ">Last 7 Orders</th>
+              <th class="bg-body-tertiary text-center">Table No</th>
+              <th class="bg-body-tertiary ">Waiter</th>
+              <th class="bg-body-tertiary text-center">Payment Method</th>
+              <th class="bg-body-tertiary text-center">Status</th>
+              <th class="bg-body-tertiary ">Received By</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users; track user.name; let i = $index) {
+            <tr>
+              <!-- <td class="text-center">
+                <c-avatar
+                  [size]="'md'"
+                  src="{{ user.avatar }}"
+                  status="{{ user.status }}"
+                />
+              </td> -->
+              <td>
+                <div>{{ user.name }}</div>
+                <div class="small text-body-secondary text-nowrap">
+                  <span>
+                    {{ user.state }} | Registered: {{ user.registered }}
+                  </span>
+                </div>
+              </td>
+              <td class="text-center">
+                <div class="float-center">
+                  <strong>{{ user.usage }}</strong>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex justify-content-between">
+                
+                  <div class="float-center ms-1 ">
+                    <small class="text-body-secondary">
+                      {{ user.name }}
+                    </small>
+                  </div>
+                </div>
+                
+              </td>
+              <td class="text-center">
+                <svg cIcon name="cibCc{{ user.payment }}" size="xl"></svg>
+              </td>
+              <td>
+                <c-badge class="ms-2 float-center" color="success"> PAID</c-badge>
+              </td>
+              <td>
+                <div class="d-flex justify-content-between">
+                
+                  <div class="float-center ms-1 ">
+                    <small class="text-body-secondary">
+                      {{ user.name }}
+                    </small>
+                  </div>
+                </div>
+                
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

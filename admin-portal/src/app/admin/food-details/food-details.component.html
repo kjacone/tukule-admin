@@ -1,0 +1,132 @@
+<app-confirm-modal (confirmed)="handleConfirmation()" [inputData]="inputData" [visible]="visible"></app-confirm-modal>
+<app-loader [visible]="loading"></app-loader>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+
+                <h5> <span *ngIf="new"> CREATE NEW </span> <span *ngIf="!new"> EDIT </span>
+                    FOOD </h5>
+            </div>
+            <div class="card-body reset-table p-t-0">
+                <h4 class="sub-title"> Food Details </h4>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <label> Food Name </label>
+                        <input type="text" [(ngModel)]="name" class="form-control"
+                            [placeholder]="('Food Name'   ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Category</label>
+                        <select name="select" [(ngModel)]="category" class="form-control">
+                            <option value="" disabled selected>Select Category</option>
+                            <option *ngFor="let item of categories" [value]="item">{{ item }}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Select Menu Name</label>
+                        <select name="select" [(ngModel)]="menuName" class="form-control">
+                            <option value="" disabled selected>Select Menu Name</option>
+                            <option *ngFor="let item of menuNameList" [value]="item">{{ item}} menu</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Unit of Measurement</label>
+                        <select name="select" [(ngModel)]="uom" class="form-control">
+                            <option value="" disabled selected>Select UOM</option>
+                            <option *ngFor="let item of uomList" [value]="item.name">{{ item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label> Quantity </label>
+                        <input type="number" [(ngModel)]="qty" class="form-control"
+                            [placeholder]="('Quantity'  ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6">
+                        <label> Cost </label>
+                        <input type="number" [(ngModel)]="cost" class="form-control"
+                            [placeholder]="('Cost'  ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6" *ngIf="new">
+                        <label> Re-order Level </label>
+                        <input type="number" [(ngModel)]="reorder" class="form-control"
+                            [placeholder]="('Reorder Level'  ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6" *ngIf="new">
+                        <label> Add Tags </label>
+                        <ng-multiselect-dropdown [placeholder]="('Select Tags'  ) || '&nbsp;'" maxHeight="100"
+                            [(ngModel)]="selectedTags" [settings]="dropdownSettings" [data]="dropdownList1"
+                            (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div class="col-sm-6" *ngIf="new">
+                        <label> Description (optional) </label>
+                        <textarea type="text" [(ngModel)]="description" class="form-control"
+                            [placeholder]="('Additional Description'  ) || '&nbsp;'"> </textarea>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label> Select Accompaniments </label>
+                        <ng-multiselect-dropdown [placeholder]="('Select Accompaniments'  ) || '&nbsp;'" maxHeight="100"
+                            [(ngModel)]="selectedAccompaniments" [settings]="dropdownSettings" [data]="dropdownList"
+                            (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div class="col-sm-6" *ngIf="new">
+                        <label> Discount </label>
+                        <input type="number" [(ngModel)]="discount" class="form-control"
+                            [placeholder]="('Discount'  ) || '&nbsp;'">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div *ngFor="let data of formData; let i = index">
+
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <select name="select" [(ngModel)]="data.name" class="form-control">
+                                        <option value="" disabled selected>Select Supply</option>
+                                        <option *ngFor="let option of options" [value]="option.name">{{ option.name}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="number" [(ngModel)]="data.quantity" class="form-control"
+                                        [placeholder]="('Quantity'  ) || '&nbsp;'">
+                                </div>
+
+                                <button mat-icon-button (click)="removeRow(i)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                                <button mat-icon-button (click)="addRow()">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 p-1">
+                        <label class="col-sm-12 col-form-label"> Upload Food Photo </label>
+                        <div class="col-sm-12">
+                            <input (change)="preview_banner($event,'foods')" type="file" class="form-control">
+                        </div>
+                        <div class="col-sm-12 p-3">
+                            <img [src]="foodImage" alt="" style="height: 100px;width: 100px;float: right;"
+                                onError="this.src='assets/images/food.png'">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-danger btn-round" (click)="create()" *ngIf="new"> Create New Food
+                        </button>
+                        <button class="btn btn-danger btn-round" (click)="updateFood()" *ngIf="!new">
+                            Update Food Details </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

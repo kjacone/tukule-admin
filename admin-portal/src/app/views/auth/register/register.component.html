@@ -1,0 +1,355 @@
+<div class="bg-light dark:bg-transparent min-vh-100 d-flex flex-row align-items-center">
+
+<c-container>
+  <c-row class="justify-content-center">
+
+    <c-card>
+      <c-card-body>
+        <mat-stepper orientation="horizontal" [linear]="isLinear" #stepper>
+          <mat-step [stepControl]="firstFormGroup">
+            <form [formGroup]="firstFormGroup" rowHeight="100%">
+              <ng-template matStepLabel>Add your First Restaurant</ng-template>
+
+              <mat-form-field class="example-full-width">
+                <mat-label>Retaurant Name</mat-label>
+                <input matInput placeholder="Ex. Mama Pima" />
+              </mat-form-field>
+              <mat-form-field class="example-full-width">
+                <mat-label>Address</mat-label>
+                <textarea matInput placeholder="Ex. Hurlingam Road"></textarea>
+              </mat-form-field>
+
+              <table class="example-full-width" cellspacing="0">
+                <tr>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>No of Floors</mat-label>
+                      <mat-select>
+                        <mat-option value="1">1</mat-option>
+                        <mat-option value="2">2</mat-option>
+                        <mat-option value="3">3</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>No of tables</mat-label>
+                      <mat-select>
+                        <mat-option value="50">50</mat-option>
+                        <mat-option value="100">100</mat-option>
+                        <mat-option value="200">200</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>No of Restaurants</mat-label>
+                      <mat-select>
+                        <mat-option value="1">1</mat-option>
+                        <mat-option value="2">2</mat-option>
+                        <mat-option value="3">3</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Paybill Number</mat-label>
+                      <input matInput type="number" placeholder="Ex. 12345" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Image or Logo</mat-label>
+
+                      <ngx-mat-file-input type="file" id="fileInput" name="fileInput" accept="image/*"
+                        (change)="selectFiles($event)">
+                      </ngx-mat-file-input>
+                    </mat-form-field>
+                  </td>
+                </tr>
+              </table>
+
+              <div class="mt-3 d-flex justify-content-between">
+                <button mat-flat-button matStepperNext color="primary">
+                  Next
+                </button>
+              </div>
+            </form>
+          </mat-step>
+
+          <mat-step [stepControl]="secondFormGroup">
+            <form [formGroup]="secondFormGroup">
+              <ng-template matStepLabel>Add Owner Information</ng-template>
+              <table class="example-full-width" cellspacing="0">
+                <tr>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>First Name</mat-label>
+                      <input matInput placeholder="Ex. Jhon" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Middle Name</mat-label>
+                      <input matInput placeholder="Ex. Mutuma" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Last Name</mat-label>
+                      <input matInput placeholder="Ex. Doe" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Id Number</mat-label>
+                      <input matInput type="number" placeholder="Ex. 12345" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Mobile Number</mat-label>
+                      <input matInput type="tel" placeholder="Ex. 0724727999" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Passport Photo</mat-label>
+
+                      <ngx-mat-file-input type="file" id="fileInput" name="fileInput" accept="image/*"
+                        (change)="selectFiles($event)">
+                      </ngx-mat-file-input>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Email Address</mat-label>
+                      <input matInput placeholder="Ex. kjacone@gmail.com" type="email" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Password</mat-label>
+                      <input matInput type="password" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Confirm Password</mat-label>
+                      <input matInput type="password" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+              </table>
+              <div class="mt-3 d-flex justify-content-between">
+                <button mat-stroked-button color="primary" matStepperPrevious>
+                  Back
+                </button>
+                <button mat-flat-button matStepperNext color="primary">
+                  Next
+                </button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step>
+            <ng-template matStepLabel>Confirm Information</ng-template>
+
+            <div class="c-container example-full-width">
+              <div class="row table-responsive">
+
+                <div class=" col-md-8 ">
+                  <div class="row">
+                    <div class="col-md-4 p-3">
+                      <img src="https://picsum.photos/200" class="img-fluid rounded-start" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body">
+                        <h5>All in One Restaurant</h5>
+                        <div> Location: Hurlingam Road</div>                     
+                        <div class="small text-body-secondary text-nowrap">
+                          <span>
+                            We are offering African Cuisines
+                          </span>
+                          
+                        </div>
+                        <br>
+                          <small class="text-body-secondary">
+                            <mat-chip-set>
+                              <mat-chip color="primary" selected matBadge="3" matBadgePosition="before">No
+                                Restaurants
+                              </mat-chip>
+                              <mat-chip color="primary" selected matBadge="2" matBadgePosition="before">No of
+                                Floors</mat-chip>
+                              <mat-chip color="primary" selected matBadge="50" matBadgePosition="before">No of
+                                Tables</mat-chip>
+                            </mat-chip-set>
+                          </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 p-3">
+                      <div>Email Address</div>
+                      <div class="small text-body-secondary text-nowrap">
+                        <span> kjaconegmail.com </span>
+                      </div>
+                    </div>
+                    <div class="col-md-6 p-3">
+                      <div>Restaurant Mobile Number</div>
+                      <div class="small text-body-secondary text-nowrap">
+                        <span> 0724727999 </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 p-3">
+                      <div>Owner Name:</div>
+                      <div class="small text-body-secondary text-nowrap">
+                        <span> Jacone Keya Sakwa </span>
+                      </div>
+                    </div>
+                    <div class="col-md-6 p-3">
+                      <div>Restaurant Status:</div>
+                      <div class="small text-body-secondary text-nowrap">
+                        <mat-chip color="accent" selected> ACTIVE </mat-chip>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 p-3">
+                      <div>Opening Date:</div>
+                      <div class="small text-body-secondary text-nowrap">
+                        <span> 2024-08-13 </span>
+                      </div>
+                    </div>
+                    <div class="col-md-6 p-3">
+                      <div>Opening Days:</div>
+                      <div class="small text-body-secondary text-nowrap">
+                        <span> Monday - Friday | 8am - 10pm</span><br>
+                        <span> Weekends | 8am - 10pm</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 p-3">
+                      <div>Social Media Pages:</div>
+                     
+                        <div class="d-flex">
+                          <svg cIcon name="cib-facebook" size="xl" title="Numbered List Icon"></svg>
+                          <svg cIcon name="cib-twitter" size="xl" title="Paper Plane Icon"></svg>
+                          <svg cIcon name="cib-google" size="xl" title="Paper Plane Icon"></svg>
+                     
+                      </div>
+                    </div>
+                  </div>
+
+
+                </div>
+
+
+
+                <div class="border-start col-md-4"> 
+                  
+                            <table  >
+                              <tr >
+                                <td colspan="2" class="p-3">
+                                <h4 >Jacone Keya Sakwa</h4> 
+                              </td></tr>
+                              <tr>
+                                <td>
+                                  <div class="p-3">
+                                    <div class="small text-body-secondary text-nowrap">
+                                      <span>First Name </span>
+                                    </div> 
+                                    <div class="text-info ">Jacone</div>
+                                  </div>
+        
+                                  <div class="p-3">
+                                    <div class="small text-body-secondary text-nowrap">
+                                      <span>Middle Name </span>
+                                    </div> 
+                                    <div class="text-info">Sakwa</div>
+                                  </div>
+        
+                                  <div class="p-3">
+                                    <div class="small text-body-secondary text-nowrap">
+                                      <span>Last Name </span>
+                                    </div> 
+                                    <div class="text-info">Keya</div>
+                                  </div>
+
+                                </td>
+                                <td>
+                                  <img class="my-img" src="https://picsum.photos/200" alt="Pizza slice image" />
+                                  <div class="p-3">
+                                    <div class="small text-body-secondary text-nowrap">
+                                      <span>ID Number </span>
+                                    </div> 
+                                    <div class="text-info">29367053</div>
+                                  </div>
+                                
+                                </td>
+                              </tr>
+
+                              <tr>
+                                <td>
+                                  <div class="p-3">
+                                    <div class="small text-body-secondary text-nowrap">
+                                      <span>Email Address </span>
+                                    </div> 
+                                    <div class="text-info">kjacone&#64;gmail.com</div>
+                                    <br>
+                                    <button  cButton color="info" variant="outline">Email</button>
+                                  </div>
+
+                                
+                                </td>
+
+
+                                <td>
+                                  <div class="p-3">
+                                    <div class="small text-body-secondary text-nowrap">
+                                      <span>Phone Number </span>
+                                    </div> 
+                                    <div class="text-info">254724727999</div><br>
+                                    <button cButton color="info" variant="outline">Call</button>
+                                  </div>
+                                </td>
+                              </tr>
+                            </table>
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+
+            <div class="mt-3 d-flex justify-content-between">
+              <button mat-stroked-button color="primary" matStepperPrevious>
+                Back
+              </button>
+              <button mat-flat-button color="primary" (click)="stepper.reset()">
+                Submit
+              </button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </c-card-body>
+    </c-card>
+  </c-row>
+</c-container>
+</div>

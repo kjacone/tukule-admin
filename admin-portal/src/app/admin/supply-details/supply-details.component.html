@@ -1,0 +1,83 @@
+<app-confirm-modal (confirmed)="handleConfirmation()" [inputData]="inputData" [visible]="visible"></app-confirm-modal>
+<app-loader [visible]="loading"></app-loader>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+
+                <h5> <span *ngIf="new"> CREATE NEW </span> <span *ngIf="!new"> EDIT </span>
+                    SUPPLY </h5>
+            </div>
+            <div class="card-body reset-table p-t-0">
+                <h4 class="sub-title"> Supply Details </h4>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <label> Item Name' </label>
+                        <input type="text" [(ngModel)]="name" class="form-control"
+                            [placeholder]="('Item Name'   ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Unit of Measurement</label>
+                        <select name="select" [(ngModel)]="uom" class="form-control">
+                            <option *ngFor="let item of uomList" [value]="item.name">{{ item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label> Quantity </label>
+                        <input type="number" [(ngModel)]="qty" class="form-control"
+                            [placeholder]="('Quantity'  ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6">
+                        <label> Cost </label>
+                        <input type="number" [(ngModel)]="cost" class="form-control"
+                            [placeholder]="('Cost'  ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6" *ngIf="new">
+                        <label> Re-order Level </label>
+                        <input type="number" [(ngModel)]="reorder" class="form-control"
+                            [placeholder]="('Reorder Level'  ) || '&nbsp;'">
+                    </div>
+                    <div class="col-sm-6" *ngIf="new">
+                        <label> Notes (optional) </label>
+                        <textarea type="text" [(ngModel)]="notes" class="form-control"
+                            [placeholder]="('Additional Notes'  ) || '&nbsp;'"> </textarea>
+                    </div>
+                    <div class="col-sm-6">
+                        <label> Select Supplier </label>
+                        <select name="select" [(ngModel)]="supplier" class="form-control">
+                            <option *ngFor="let item of suppliers" [value]="item.fullname">{{ item.fullname}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label> Select Storage Condition </label>
+                        <select name="select" [(ngModel)]="storageCondition" class="form-control">
+                            <option *ngFor="let item of storageConditionList" [value]="item.name">{{ item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group row p-3">
+                        <label class="col-sm-4 col-form-label"> Upload Supply Photo </label>
+                        <div class="col-sm-4">
+                            <input (change)="preview_banner($event,'supplys')" type="file" class="form-control">
+                        </div>
+                        <div class="col-sm-4">
+                            <img [src]="supplyImage" alt="" style="height: 100px;width: 100px;float: right;"
+                                onError="this.src='assets/images/supply.png'">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                      <button class="btn btn-danger btn-round" (click)="create()"
+                        *ngIf="new">  Create New Supply  
+                      </button>
+                      <button class="btn btn-danger btn-round" (click)="updateSupply()" *ngIf="!new">
+                          Update Supply   </button>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+
+</div>

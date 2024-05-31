@@ -1,0 +1,144 @@
+<app-confirm-modal (confirmed)="handleConfirmation()" [inputData]="inputData" [visible]="visible"></app-confirm-modal>
+<app-loader [visible]="loading"></app-loader>
+
+<c-card class="mb-4  p-4 ">
+  <h5 class="p-3 text-center">All {{user | uppercase}}S</h5>
+  <div class="form-group row  p-3">
+    <div class="col-sm-12">
+      <input type="text" class="form-control form-control-round" [placeholder]="'Search User' || '&nbsp;'"
+        (input)="search($event.target)" />
+    </div>
+  </div>
+
+  <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+    <thead class="text-nowrap text-truncate">
+      <tr class="text-uppercase">
+        <th class="bg-body-tertiary text-center">
+          <svg cIcon name="cilPeople"></svg>
+        </th>
+        <th class="bg-body-tertiary">{{user}}</th>
+        <th class="bg-body-tertiary text-center">Position</th>
+        <th class="bg-body-tertiary text-center">Phone Number</th>
+        <th class="bg-body-tertiary text-center">Status</th>
+        <th class="bg-body-tertiary text-center">Activity</th>
+        <th class="bg-body-tertiary text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of dummy">
+        <td>
+          <ngx-skeleton-loader
+            count="1"
+            [theme]="{
+              'border-radius': '5px',
+              height: '10px',
+              border: '1px solid white'
+            }"
+          ></ngx-skeleton-loader>
+        </td>
+        <td>
+          <ngx-skeleton-loader
+            count="1"
+            [theme]="{
+              'border-radius': '5px',
+              height: '10px',
+              border: '1px solid white'
+            }"
+          ></ngx-skeleton-loader>
+        </td>
+        <td>
+          <ngx-skeleton-loader
+            count="1"
+            [theme]="{
+              'border-radius': '5px',
+              height: '10px',
+              border: '1px solid white'
+            }"
+          ></ngx-skeleton-loader>
+        </td>
+        <td>
+          <ngx-skeleton-loader
+            count="1"
+            [theme]="{
+              'border-radius': '5px',
+              height: '10px',
+              border: '1px solid white'
+            }"
+          ></ngx-skeleton-loader>
+        </td>
+        <td>
+          <ngx-skeleton-loader
+            count="1"
+            [theme]="{
+              'border-radius': '5px',
+              height: '10px',
+              border: '1px solid white'
+            }"
+          ></ngx-skeleton-loader>
+        </td>
+        <td>
+          <ngx-skeleton-loader
+            count="1"
+            [theme]="{
+              'border-radius': '5px',
+              height: '10px',
+              border: '1px solid white'
+            }"
+          ></ngx-skeleton-loader>
+        </td>
+        <td>
+          <ngx-skeleton-loader
+            count="1"
+            [theme]="{
+              'border-radius': '5px',
+              height: '10px',
+              border: '1px solid white'
+            }"
+          ></ngx-skeleton-loader>
+        </td>
+      </tr>
+
+
+
+      @for (user of users; track user.fname; let i = $index) {
+      <tr>
+        <td class="text-center">
+          <c-avatar [size]="'md'" [src]="user.coverImage" [status]="user.status === 'active' ? 'success' : 'danger'" />
+        </td>
+        <td>
+          <div>{{ user.fname }} {{ user.lname }}</div>
+          <div class="text-body-secondary text-nowrap">
+            <span>
+              {{ user.email }}
+            </span>
+          </div>
+        </td>
+        <td class="text-center">
+          <div class="fw-semibold text-nowrap">{{ user.type }}</div>
+        </td>
+        <td class="text-center">
+          <div class="fw-semibold text-nowrap">{{ user.phone }}</div>
+        </td>
+        <td class="text-center">
+          <div class="d-flex justify-content-center align-items-center">
+            <c-badge class="ms-2 float-end" [color]="user.status === 'active' ? 'success' : 'danger'">
+              {{ user.status |uppercase }}
+            </c-badge>
+          </div>
+        </td>
+        <td class="text-center">
+          <div class="small text-body-secondary">Last login</div>
+          <div class="fw-semibold text-nowrap">
+            {{ user.activity.toDate() | date }}
+          </div>
+        </td>
+        <td class="text-center">
+          <button type="button" (click)="openUser(user)" cButton class="btn btn-warning btn-round">
+            View
+          </button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</c-card>

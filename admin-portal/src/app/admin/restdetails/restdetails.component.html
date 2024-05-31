@@ -1,0 +1,259 @@
+<app-confirm-modal (confirmed)="handleConfirmation()" [inputData]="inputData" [visible]="visible" ></app-confirm-modal>
+<app-loader [visible]="loading" ></app-loader>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+      
+          <h5> <span *ngIf="new">  Create New   </span> <span *ngIf="!new">  Edit  </span>
+              Restaurant   </h5>
+        </div>
+        <div class="card-body reset-table p-t-0">
+          <h4 class="sub-title">  Owner Details   </h4>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <label>  First Name   </label>
+              <input type="text" [(ngModel)]="fname" class="form-control"
+                [placeholder]="('First Name'   ) || '&nbsp;'">
+            </div>
+            <div class="col-sm-6">
+              <label>  Last Name   </label>
+              <input type="text" [(ngModel)]="lname" class="form-control"
+                [placeholder]="('Last Name'  ) || '&nbsp;'">
+            </div>
+            <div class="col-sm-6">
+              <label>  Email  </label>
+              <input type="email" [disabled]="!new" [(ngModel)]="email" class="form-control"
+                [placeholder]="('Email'  ) || '&nbsp;'">
+            </div>
+            <div class="col-sm-6" *ngIf="new">
+              <label>  Password  </label>
+              <input type="password" [(ngModel)]="password" class="form-control"
+                [placeholder]="('Password'  ) || '&nbsp;'">
+            </div>
+            <div class="col-sm-6">
+              <label>  Contact No   </label>
+              <input type="number" [(ngModel)]="phone" class="form-control"
+                [placeholder]="('Contact No'  ) || '&nbsp;'">
+            </div>
+            <div class="form-group row p-3">
+              <label class="col-sm-4 col-form-label">  Upload Owner Photo  </label>
+              <div class="col-sm-4">
+                <input (change)="preview_banner($event,'users')" type="file" class="form-control">
+              </div>
+              <div class="col-sm-4">
+                <img [src]="userImage" alt="" style="height: 100px;width: 100px;float: right;"
+                  onError="this.src='assets/images/user.png'">
+              </div>
+            </div>
+          </div>
+  
+  
+          <h4 class="sub-title">  Restaurants Details  </h4>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <label>  Restaurants Name  </label>
+              <input type="text" [(ngModel)]="name" class="form-control"
+                [placeholder]="('Restaurants Name'  ) || '&nbsp;'">
+            </div>
+            <div class="col-sm-6">
+              <label>  Select Cuisine  </label>
+              <ng-multiselect-dropdown [placeholder]="('Select Cuisine'  ) || '&nbsp;'" maxHeight="100"
+               [(ngModel)]="selectedItems" [settings]="dropdownSettings"   [data]="dropdownList"
+                (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
+              </ng-multiselect-dropdown>
+            </div>
+            <div class="col-sm-12">
+              <label>  Address  </label>
+              <mat-google-maps-autocomplete country="ke"
+              type="address"
+              [(ngModel)]="address"
+              appearance="outline"
+              (onAutocompleteSelected)="onAutocompleteSelected($event)"
+              
+              >
+              </mat-google-maps-autocomplete>
+            </div>
+  
+            <div class="col-sm-6">
+              <label>  Per Person Dish Ksh  </label>
+              <input [(ngModel)]="dishPrice" type="number" class="form-control" placeholder="Per Person Dish Ksh">
+            </div>
+            <div class="col-sm-6">
+              <label>  Opening Time  </label>
+              <input [(ngModel)]="openTime" type="time" class="form-control"
+                [placeholder]="('Opening Time'  ) || '&nbsp;'">
+            </div>
+            <div class="col-sm-6">
+              <label>  Closing Time  </label>
+              <input [(ngModel)]="closeTime" type="time" class="form-control"
+                [placeholder]="('Closing Time'  ) || '&nbsp;'">
+            </div>
+            <div class="col-sm-6">
+              <label>  Estimated Delivery time  </label>
+              <input [(ngModel)]="time" type="number" class="form-control"
+                [placeholder]="('Estimated Delivery time'  ) || '&nbsp;'">
+            </div>
+            <div class="col-sm-12">
+              <label>  Restaurant Description  </label>
+              <textarea [(ngModel)]="descritions" rows="5" cols="5" class="form-control"
+                [placeholder]="('Restaurant Description'  ) || '&nbsp;'"></textarea>
+            </div>
+            <div class="col-sm-12">
+              <label>  Select city  </label>
+              <select name="select" [(ngModel)]="city" class="form-control">
+                <option value="" disabled selected>Select a city</option>
+                <option *ngFor="let item of cities" [value]="item.id">{{item.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row p-3">
+            <label class="col-sm-4 col-form-label">  Upload cover image here  </label>
+            <div class="col-sm-4">
+              <input (change)="preview_banner($event,'venues')" type="file" class="form-control">
+            </div>
+            <div class="col-sm-4">
+              <img [src]="coverImage" alt="" style="height: 100px;width: 100px;float: right;"
+                onError="this.src='assets/icon.png'">
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-12">
+              <button class="btn btn-danger btn-round" (click)="create()"
+                *ngIf="new">  Create New Restaurant  
+              </button>
+              <button class="btn btn-danger btn-round" (click)="updateVenue()" *ngIf="!new">
+                  Update Restaurant   </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row" *ngIf="!new">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body-big card-status">
+          <h5>  Income Status  </h5>
+          <div class="card-body text-center">
+            <h2 class="text-primary">  ORDERS    : {{totalOrders.length}}</h2>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <p class="f-16 text-muted m-0">  Totale Income   : {{getCurrency()}} {{totalSales}}</p>
+            </div>
+            <div class="col-6">
+  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body-big card-status">
+          <h5>  Orders & Reviews  </h5>
+          <div class="p-3">
+            <c-nav variant="tabs">
+                <a [active]="true" [cTabContent]="tabContent" [routerLink] [tabPaneIdx]="0" cNavLink>Orders</a>
+                <a [cTabContent]="tabContent" [routerLink] [tabPaneIdx]="1" cNavLink>Reviews</a>
+              </c-nav>  
+        </div>
+          <c-tab-content #tabContent="cTabContent">
+            <c-tab-pane >
+              <ng-template ngbTabContent>
+                <div class="orders">
+                  <div class="card_div" *ngFor="let item of totalOrders">
+  
+                    <div class="resto_detail">
+                      <div class="back_image" [style.backgroundImage]="'url('+getImage(item.uid.cover)+')'">
+                      </div>
+                      <div style="margin-left: 20px;display: flex;flex-direction: column;">
+                        <p class="res_name">{{item.uid.fullname}}</p>
+                        <p class="res_location">
+                          {{item.address.address}}
+                        </p>
+                      </div>
+                    </div>
+  
+                    <div class="line_div"></div>
+  
+                    <div class="order_detail">
+                      <p class="head_gray">  ITEMS  </p>
+                      <!-- <div class="small_lbl">
+                                              <span *ngFor="let order of item.order;let ol = index">{{order.quantiy}}
+                                                  X {{order.name}} <span *ngIf="ol !=item.order.length">,</span></span>
+                                          </div> -->
+                      <div class="small_lbl">
+                        <span *ngFor="let order of item.order;let ol = index">
+                          <div *ngIf="!order.selectedItem || !order.selectedItem.length" class="border_bottom">
+                            {{order.name}} X {{order.quantiy}} <span *ngIf="ol !=item.order.length">,</span>
+                          </div>
+  
+                          <div *ngFor="let subItems of order.selectedItem;let j = index" class="subNames">
+                            <p class="food_title">{{order.name}} X {{order.selectedItem[j].total}}</p>
+                            <div *ngFor="let addods of subItems.item" class="flex_titles">
+                              <p class="sub_name">
+                                - {{addods.name}}
+                              </p>
+                              <p class="sub_name">
+                                {{getCurrency()}} {{addods.value}}
+                              </p>
+                            </div>
+                          </div>
+                        </span>
+                      </div>
+                      <p class="head_gray">  ORDERED ON  </p>
+                      <p class="small_lbl">{{getDates(item.time)}} </p>
+                      <p class="head_gray" *ngIf="item.appliedCoupon">  Discount  </p>
+                      <p class="small_lbl" *ngIf="item.appliedCoupon"> {{getCurrency()}} {{item.dicount}}
+                      </p>
+                      <p class="head_gray">  TOTAL AMOUNT  </p>
+                      <p class="small_lbl"> {{getCurrency()}} {{item.grandTotal}}</p>
+                    </div>
+  
+                    <div class="line_div"></div>
+  
+                    <div class="status_detail" *ngIf="item.status =='completed' || item.status == 'delivered'">
+                      <div class="deliver_div">
+                          Delivered  
+                      </div>
+                    </div>
+                    <div class="status_detail" *ngIf="item.status =='rejected' || item.status == 'cancel'">
+                      <div class="deliver_div">
+                          Your Order is   {{item.status}}
+                      </div>
+                    </div>
+                    <div class="status_detail"
+                      *ngIf="item.status =='created' || item.status =='ongoing' || item.status === 'accepted'">
+                      <div class="deliver_div">
+                          Your Order is   {{item.status}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </c-tab-pane>
+            <c-tab-pane >
+              <ng-template ngbTabContent>
+                <div class="review">
+                  <div class="row" *ngFor="let item of reviews" style="border-bottom: 1px solid lightgray;padding: 10px;">
+                    <div class="col-md-2">
+                      <img height="100" width="100" src="{{item.cover}}" alt="" onError="this.src='assets/icon.png'">
+                    </div>
+                    <div class="col-md-10">
+                      <p style="font-weight: bold;"> {{item.uid.fullname}}</p>
+                      {{item.descriptions}}
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </c-tab-pane>
+          </c-tab-content>
+        </div>
+      </div>
+    </div>
+  </div>
+  
