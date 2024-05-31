@@ -42,10 +42,10 @@ export class AuthGuard implements CanActivate {
       else {
         console.log("local_user3")
         if (local_user.user.type != 'admin') {
-          this.snack.openSnackBar(
-            'Welcome Back ' + local_user.user.email
-            // 'dashboard'
-          );
+          // this.snack.openSnackBar(
+          //   'Welcome Back ' + local_user.user.email
+          //   // 'dashboard'
+          // );
         }
       }
       return local_user;
