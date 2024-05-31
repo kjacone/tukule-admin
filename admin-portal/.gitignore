@@ -11,7 +11,7 @@
 npm-debug.log
 yarn-error.log
 
-src/app/environments/*.ts
+/src/app/environments/*.ts
 
 # profiling files
 chrome-profiler-events*.json
