@@ -33,20 +33,17 @@ export class OrdersComponent  implements OnInit {
   }
 
   getAllOrders() {
-    this.api.getAllOrders().then((data) => {
+    this.api.getAllOrders().subscribe((data:any) => {
       console.log('orders data', data);
-      data.forEach(element => {
+      data.forEach((element:any) => {
         element.time = new Date(element.time);
         element.order = JSON.parse(element.order);
       });
       data.sort((a, b) => b.time - a.time);
-      this.orders = data;
-      this.dummOrders = data;
+      this.orders = [...data];
+      this.dummOrders = [...data];
       this.dummy = [];
     }, error => {
-      console.log(error);
-      this.dummy = [];
-    }).catch(error => {
       console.log(error);
       this.dummy = [];
     });

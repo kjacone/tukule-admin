@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, NgStyle } from '@angular/common';
 import { CardComponent} from '@coreui/angular';
 import {  NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { Observable } from 'rxjs';
+import { DocumentData } from '@angular/fire/firestore';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -13,81 +15,26 @@ import {  NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
   styleUrl: './admin-dashboard.component.scss'
 })
 export class AdminDashboardComponent implements OnInit {
-  rest: any[] = [];
-  users: any[] = [];
-  drivers: any[] = [];
-  orders: any[] = [];
+  rest$ = this.api.getVenues() as Observable<DocumentData[]>;
+  users$ = this.api.getUsers() as Observable<DocumentData[]>;
+  drivers$ = this.api.getUsers() as Observable<DocumentData[]>;
+  orders$ = this.api.getAllOrders() as Observable<DocumentData[]>;
   displayOrders: any[] = [];
   dummy = Array(10);
   currentUser: any;
+  user$ = this.api.user$;
   constructor(
     private route: ActivatedRoute,
     private api: BackendService,private comm: CommonService,
     private router: Router
   ) {
-    this.currentUser = this.comm.getCurrentUser();
-    this.getRest();
-    this.getUsers();
-    this.getAllOrders();
+    // this.currentUser = this.comm.getCurrentUser();
 
   }
 
   ngOnInit() {
   }
 
-  getRest() {
-    this.api.getVenues().then((data) => {
-      console.log('rest data', data);
-      this.rest = data;
-    }, error => {
-      console.log(error);
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-
-  getUsers() {
-    this.users = [];
-    this.drivers = [];
-    this.api.getUsers().then((data) => {
-      console.log('users data', data);
-      data.forEach(element => {
-        if (element.type !== 'admin') {
-          this.users.push(element);
-        } else if (element.type === 'delivery') {
-          this.drivers.push(element);
-        }
-      });
-    }, error => {
-      console.log(error);
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-
-  getAllOrders() {
-    this.api.getAllOrders().then((data) => {
-      console.log('orders data', data);
-      data.forEach(element => {
-        element.time = new Date(element.time);
-      });
-      data.sort((a, b) => b.time - a.time);
-      this.orders = data;
-      this.orders.forEach((element, i) => {
-        if (i <= 9) {
-          element.order = JSON.parse(element.order);
-          this.displayOrders.push(element);
-        }
-      });
-      this.dummy = [];
-    }, error => {
-      console.log(error);
-      this.dummy = [];
-    }).catch(error => {
-      console.log(error);
-      this.dummy = [];
-    });
-  }
 
   getDates(date) {
     return new Intl.DateTimeFormat('en-US', {

@@ -1,61 +1,64 @@
-import { Injectable } from '@angular/core';
+import { inject,Injectable } from '@angular/core';
 import {
   CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
-  Router,
+  Router,UrlTree,
 } from '@angular/router';
 
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { CommonService } from '../common/common.service';
+
+import { Observable,switchMap,of} from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { Auth, user } from '@angular/fire/auth';
+import { doc, docData, DocumentReference, Firestore, DocumentData } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private authServ: AngularFireAuth,
-    private snack: CommonService
-  ) { }
+  auth: Auth = inject(Auth);
+  firestore: Firestore = inject(Firestore);
 
-  async canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Promise<boolean> {
-    try {
-      let local_user = JSON.parse(localStorage.getItem('user_data'));
-      console.log("local_user", local_user);
+ 
 
-      if (!local_user) {
-        console.log("local_user1"); 0
-        this.snack.openSnackBarAction(
-          'You must be logged In!!! Login Please',
-          'auth'
-        );
-      } else if (this.snack.isTokenExpired(local_user.token)) {
-        console.log("local_user2")
-        this.snack.openSnackBarAction(
-          'You must be logged In!!! Login Please',
-          'auth'
-        );
+
+constructor( private router: Router) {
+  
+ }
+
+canActivate(
+  next: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+
+    
+
+    return user(this.auth).pipe(
+    take(1),
+    switchMap(user => {
+      
+      const isAuthenticated = !!user;
+      if (!isAuthenticated) {
+        console.log('not authenticated');
+        this.router.navigate(['auth']);
+        return of(false);
       }
-      else {
-        console.log("local_user3")
-        if (local_user.user.type != 'admin') {
-          // this.snack.openSnackBar(
-          //   'Welcome Back ' + local_user.user.email
-          //   // 'dashboard'
-          // );
-        }
-      }
-      return local_user;
-    } catch (error) {
-      console.error('An error occurred:', error);
-      this.snack.openSnackBarAction(
-        'An error occurred while checking authentication. Please try again later.',
-        'auth'
-      );
-      return false;
-    }
-  }
+
+      // const userDoc: DocumentReference<DocumentData> = doc(this.firestore, 'users', user.uid);
+      // return docData(userDoc).pipe(
+      //   take(1),
+      //   map((userData: any) => {
+      //     console.log(' authenticated',userData);
+      //     const isAdmin = userData.type === 'admin';
+      //     if (isAdmin) {
+      //       this.router.navigate(['admin-dashboard']);
+      //     }else{
+      //       this.router.navigate(['dashboard']);
+      //     }
+      //     return !!user;
+      //   })
+      // );
+      return of(true);
+    })
+  );
+}
 }

@@ -9,7 +9,7 @@
           </div>
           <div class="col-6  text-right">
             <div class="counter-card-text">
-              <h3>{{orders.length}}</h3>
+              <h3>{{(orders$| async)?.length}}</h3>
               <p> Orders </p>
             </div>
           </div>
@@ -27,7 +27,7 @@
           </div>
           <div class="col-6 text-right">
             <div class="counter-card-text">
-              <h3>{{users.length}}</h3>
+              <h3>{{(users$| async)?.length}}</h3>
               <p> Users </p>
             </div>
           </div>
@@ -45,7 +45,7 @@
           </div>
           <div class="col-6 text-right">
             <div class="counter-card-text">
-              <h3>{{rest.length}}</h3>
+              <h3>{{(rest$| async)?.length}}</h3>
               <p> Restaurants </p>
             </div>
           </div>
@@ -77,7 +77,8 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of dummy">
+                @for (item of dummy; track item) {
+                <tr >
                   <td>
                     <ngx-skeleton-loader count="1" [theme]="{
                       'border-radius': '5px',
@@ -135,20 +136,23 @@
                         }"></ngx-skeleton-loader>
                   </td>
                 </tr>
-                <tr *ngFor="let item of displayOrders;let i = index">
+              }
+              @for (item of (orders$ | async) ; track item) {
+                <tr >
                   <td><a href="javascript:;"><img class="img-responsive" style="height: 40px;border-radius: 50%;"
-                        [src]="item.uid.cover" onError="this.src='assets/images/user.png'" alt="chat-user"></a>
+                        [src]="item['uid'].cover" onError="this.src='assets/images/user.png'" alt="chat-user"></a>
                   </td>
-                  <td> {{item.uid.fullname}}</td>
-                  <td>{{item.vid.name}}</td>
-                  <td><button type="button" disabled [className]="getClass(item.status)">{{item.status}}</button></td>
-                  <td>{{getDates(item.time)}}</td>
-                  <td> {{getCurreny()}} {{item.grandTotal}}</td>
-                  <td>{{item.order.length}}</td>
+                  <td> {{item['uid'].fullname}}</td>
+                  <td>{{item['vid'].name}}</td>
+                  <td><button type="button" disabled [className]="getClass(item['status'])">{{item['status']}}</button></td>
+                  <td>{{getDates(item['time'])}}</td>
+                  <td> {{getCurreny()}} {{item['grandTotal']}}</td>
+                  <td>{{item['order'].length}}</td>
                   <td><button type="button" (click)="openOrder(item)"
                       class="btn btn-success btn-round btn-outline-success"> View </button>
                   </td>
                 </tr>
+              }
               </tbody>
             </table>
           </div>

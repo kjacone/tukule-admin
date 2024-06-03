@@ -3,41 +3,21 @@
     <c-row class="justify-content-center">
       <c-col lg="10" xl="8">
         <c-card-group>
-          <c-card class="p-4">
+          <c-card class="p-4 justify-content-center">
             <c-card-body>
-              <form cForm>
-                <h1>Login</h1>
-                <p class="text-body-secondary">Sign In to your account</p>
-                <c-input-group class="mb-3">
-                  <span cInputGroupText>
-                    <svg cIcon name="cilUser"></svg>
-                  </span>
-                  <input autoComplete="email" cFormControl type="email" class="form-control"
-                   [placeholder]="('Your Email Address') || '&nbsp;'"
-                  [(ngModel)]="email" [ngModelOptions]="{standalone: true}"/>
-                </c-input-group>
-                <c-input-group class="mb-4">
-                  <span cInputGroupText>
-                    <svg cIcon name="cilLockLocked"></svg>
-                  </span>
-                  <input
-                    autoComplete="current-password"
-                    cFormControl
-                    type="password" class="form-control" [placeholder]="('Password') || '&nbsp;'"
-                    [(ngModel)]="password" [ngModelOptions]="{standalone: true}"
-                  />
-                </c-input-group>
+              <form cForm class="justify-content-center">
+                <h1 class="text-center">Login</h1>
+                <p class="text-body-secondary text-center">Sign In to your account</p>
+                
+                <div class="text-center p-2">
+                  <img src="assets/logo.jpg" style="width: 150px; height: 150px"
+                      alt="logo.png" />
+              </div>
+
                 <c-row>
-                  <c-col xs="6">
                     <button cButton class="px-4" color="primary" [disabled]="isLoading" (click)="login()">
-                      Login
+                      Login with Google
                     </button>
-                  </c-col>
-                  <c-col class="text-right" xs="6">
-                    <button cButton class="px-0" color="link">
-                      Forgot password?
-                    </button>
-                  </c-col>
                 </c-row>
                 
               </form>

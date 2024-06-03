@@ -41,16 +41,13 @@ export class NewdriverComponent implements OnInit {
       if (!this.new && data.id) {
         this.loading = true;
         this.id = data.id;
-        this.api.getProfile(data.id).then(data => {
+        this.api.getProfile(data.id).subscribe((data:any) => {
           this.loading = false;
           console.log(data);
           this.coverImage = data.coverImage;
           this.fullname = data.fname + ' ' + data.lname;
           this.email = data.email;
           this.phone = data.phone;
-        }).catch(error => {
-          this.loading = false;
-          console.log(error);
         });
       }
     });
@@ -135,7 +132,7 @@ export class NewdriverComponent implements OnInit {
     this.loading = true;
     this.api.checkEmail(this.email).then((datas: any) => {
       if (!datas.length) {
-        this.api.createDriver(this.email, this.password, this.fullname, this.coverImage, '', this.phone).then((data) => {
+        this.api.createDriver(this.email,  this.fullname, this.coverImage, '', this.phone).then((data) => {
           this.loading = false;
           console.log(data);
           this.comm.openSnackBar('Success Driver Created');

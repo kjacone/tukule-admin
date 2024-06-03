@@ -36,15 +36,12 @@ export class RestaurantsComponent implements OnInit {
   }
 
   getRest() {
-    this.api.getVenues().then((data) => {
+    this.api.getVenues().subscribe((data) => {
       console.log('rest data', data);
-      this.rest = data;
-      this.dummyRest = data;
+      this.rest = [...data];
+      this.dummyRest = [...data];
       this.dummy = [];
     }, error => {
-      console.log(error);
-      this.dummy = [];
-    }).catch(error => {
       console.log(error);
       this.dummy = [];
     });

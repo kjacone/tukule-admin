@@ -41,7 +41,12 @@ open(arg0: string,arg1: boolean) {
 }
   icons = { cilChartPie, cilArrowRight };
   constructor(private comm: CommonService,private api: BackendService) {
-  console.log('constructor: ',this.userType);
+    this.currentUser = this.api.checkAuth().then((user) => {
+      this.currentUser = user
+      console.log('auth',this.currentUser);
+      this.getRest(this.currentUser.email);
+    });
+   
   }
 
 
@@ -49,6 +54,8 @@ open(arg0: string,arg1: boolean) {
   readonly #document: Document = inject(DOCUMENT);
   readonly #renderer: Renderer2 = inject(Renderer2);
   readonly #chartsData: DashboardChartsData = inject(DashboardChartsData);
+apis = inject(BackendService);
+  user$ = this.apis.user$;
 
   currentUser:any;
   rest: any ={email:''};
@@ -150,12 +157,9 @@ open(arg0: string,arg1: boolean) {
   });
 
   ngOnInit(): void {
-    of(this.comm.getCurrentUser()).pipe(
-      tap(currentUser => {
-        this.currentUser = currentUser;
-        this.getRest(this.currentUser.user.email);
-      })
-    ).subscribe();
+   
+      
+      
 
 
     this.initCharts();
@@ -166,15 +170,16 @@ open(arg0: string,arg1: boolean) {
  
 
   getRest(email) {
-    this.api.getSingleVenues(email).then((data) => {
-      console.log('restaurant data', data);
-      this.rest = data;
-      this.comm.setRestaurant(data);
-    }, error => {
-      console.log(error);
-    }).catch(error => {
-      console.log(error);
-    });
+   this.rest = this.api.getSingleVenues(email).then((data) => {
+     console.log(data);
+     this.rest = data;
+     console.log('rest: ',this.rest);
+   this.comm.setRestaurant(this.rest);
+   }, (error)=>{
+     console.log(error);
+   }
+  );
+   
   }
 
   initCharts(): void {

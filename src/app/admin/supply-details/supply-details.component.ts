@@ -5,6 +5,7 @@ import { Router, RouterLink ,ActivatedRoute} from '@angular/router';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Location } from '@angular/common';
 import  firebase from "firebase/compat/app";
+import { serverTimestamp } from '@angular/fire/firestore';
 @Component({
   selector: 'app-supply-details',
   standalone: true,
@@ -95,7 +96,7 @@ reorder: number = 0;
               cost: this.cost,
               reorder: this.reorder,
               status: 'available',
-              created_at: firebase.firestore.FieldValue.serverTimestamp(),
+              created_at: serverTimestamp(),
               created_by: {
                 name: this.comm.getCurrentUser().user.fullname,
                 uid: this.comm.getCurrentUser().user.uid,
@@ -141,12 +142,10 @@ reorder: number = 0;
    }
 
    getUsers() {
-    this.api.getUsers().then(data => {
-      console.log(data);
+    this.api.getUsers().subscribe((data) => {
       this.suppliers = data;
-    }).catch(error => {
-      console.log(error);
-    });
+      console.log(this.suppliers);
+    })
   }
 
   

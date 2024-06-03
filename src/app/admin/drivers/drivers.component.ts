@@ -34,23 +34,23 @@ export class DriversComponent  implements OnInit {
   getUsers() {
     this.drivers = [];
     this.dummyDrivers = [];
-    this.api.getUsers().then((data) => {
-      this.dummy = [];
-      console.log('users data', data);
-      data.forEach(element => {
-        if (element.type !== 'delivery') {
-          this.drivers.push(element);
-          this.dummyDrivers.push(element);
-        }
-      });
-      console.log(this.drivers);
-    }, error => {
-      this.dummy = [];
-      console.log(error);
-    }).catch(error => {
-      this.dummy = [];
-      console.log(error);
-    });
+
+    this.api.getSpecificItems('users', 'type', 'delivery').subscribe(
+      (data) => {
+        this.dummy = [];
+        console.log('drivers data', data);
+        this.drivers = [...data]; // Create a new array by spreading the data
+        this.dummyDrivers = [...data]; // Create a new array by spreading the data
+
+        console.log(this.drivers);
+      },
+      (error) => {
+        console.log(error);
+        this.dummy = [];
+      }
+    );
+
+   
   }
 
   search(string:any) {

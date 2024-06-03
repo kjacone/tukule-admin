@@ -8,10 +8,20 @@ import { CommonService } from './services/common/common.service';
 
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NgxMatFileInputModule } from '@angular-material-components/file-input';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { MatIconModule } from '@angular/material/icon';
+
+// import { AngularFirestore } from '@angular/fire/compat/firestore';
+// import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFireModule } from '@angular/fire/compat';
+
+
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { provideAuth, getAuth, connectAuthEmulator } from '@angular/fire/auth';
+import { provideFirestore, getFirestore, connectFirestoreEmulator } from '@angular/fire/firestore';
+import { provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular/fire/functions';
+import { provideMessaging, getMessaging } from '@angular/fire/messaging';
+import { provideStorage, getStorage, connectStorageEmulator } from '@angular/fire/storage';
+
+import { MatIconModule } from '@angular/material/icon';
 import { environment } from '../app/environments/environment';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -42,16 +52,25 @@ export const appConfig: ApplicationConfig = {
       BackendService,
       ImageUploadService,
       NgxMatFileInputModule,
-      AngularFirestore,
       HttpClientModule,
       SidebarModule,
       DropdownModule,
+      // AngularFirestore,
       AngularFireModule.initializeApp(environment.firebase),
-      AngularFireAuth,
+      // AngularFireAuth,
+
+      provideFirebaseApp(() => initializeApp(environment.firebase)),
+      provideFirestore(() => getFirestore()),
+      provideAuth(() => getAuth()),
+      provideFunctions(() => getFunctions()),
+      provideStorage(() => getStorage()),
+      provideMessaging(() => getMessaging()),
+      
       MatGoogleMapsAutocompleteModule.forRoot(environment.general.apiKey),
       NgMultiSelectDropDownModule.forRoot(),
       StarRatingModule.forRoot(),
     ),
+    
     provideRouter(
       routes,
       withRouterConfig({

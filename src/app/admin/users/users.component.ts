@@ -40,18 +40,14 @@ export class UsersComponent implements OnInit {
     getUsers() {
       this.users = [];
       this.dummyUsers = [];
-      this.api.getSpecificItems('users','type',this.user).then((data) => {
+      this.api.getSpecificItems('users','type',this.user).subscribe((data) => {
         this.dummy = [];
         console.log('users data', data);
-        data.forEach(element => {
-            this.users.push(element);
-            this.dummyUsers.push(element);
-        });
+        this.users = [...data]; // Create a new array by spreading the data
+    this.dummyUsers = [...data]; // Create a new array by spreading the data
+    
         console.log(this.users);
       }, error => {
-        console.log(error);
-        this.dummy = [];
-      }).catch(error => {
         console.log(error);
         this.dummy = [];
       });

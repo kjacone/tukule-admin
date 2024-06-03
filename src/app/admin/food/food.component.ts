@@ -37,16 +37,13 @@ dummy: any;
     console.log('Confirmed! Perform the action here.');
   }
 
-  getFoods(restaurantId: String) {
-    this.api.getFoods(restaurantId).then((data) => {
+  getFoods(restaurantId: string) {
+    this.api.getFoods(restaurantId).subscribe((data) => {
       console.log('foods data', data);
-      this.foods = data;
-      this.dummyRest = data;
+      this.foods = [...data];
+      this.dummyRest = [...data];
       this.dummy = [];
     }, error => {
-      console.log(error);
-      this.dummy = [];
-    }).catch(error => {
       console.log(error);
       this.dummy = [];
     });

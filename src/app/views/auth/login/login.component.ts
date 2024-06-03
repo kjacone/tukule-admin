@@ -27,45 +27,13 @@ export class LoginComponent {
     private router: Router) { }
 
   login():any {
-    if (!this.email || !this.password) {
-      this.commonService.openSnackBar('Validation Error All Fields are required');
-      return false;
-    }
+    // if (!this.email || !this.password) {
+    //   this.commonService.openSnackBar('Validation Error All Fields are required');
+    //   return false;
+    // }
     this.isLoading = true;
-    this.api.login(this.email, this.password).then((data:any) => {
-      this.api.getProfile(data.uid).then((info: any) => {
-        this.isLoading = false;
-        console.log('user information:{}',info);
-
-        var userTokenData:any = {
-          token: this.commonService.generateToken(),
-          user: info
-        }
-        localStorage.setItem('user_data', JSON.stringify(userTokenData));
-        if (info && info.type === 'admin') {
-          this.commonService.openSnackBar('Success your login was Sucessful');
-          
-        
-          this.router.navigate(['admin-dashboard'],userTokenData);
-        } else {
-          this.router.navigate(['dashboard'],userTokenData);
-        
-      }}, error => {
-        this.isLoading = false;
-        this.commonService.openSnackBar('Error: '+ error);
-      }).catch(error => {
-      this.isLoading = false;
-        console.log(error);
-        this.commonService.openSnackBar('Error: '+ error);
-      });
-    }, error => {
-      this.isLoading = false;
-      this.commonService.openSnackBar('Error: '+ error);
-    }).catch(error => {
-      this.isLoading = false;
-      console.log(error);
-      this.commonService.openSnackBar('Error: '+ error);
-    });
+    this.api.login();
+    this.isLoading = false;
   }
 
   openPage(data:any,page:string) {
