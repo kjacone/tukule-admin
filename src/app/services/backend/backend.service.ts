@@ -1,512 +1,394 @@
-import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import  firebase from "firebase/compat/app";
-import { BehaviorSubject, Timestamp } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+
+import {
+  Auth,
+  authState,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  user,
+  getAuth,
+  User,
+} from '@angular/fire/auth';
+import {
+  map,
+  switchMap,
+  firstValueFrom,
+  filter,
+  BehaviorSubject,
+  Observable,
+  Subscription,
+} from 'rxjs';
+import {
+  doc,
+  docData,
+  DocumentReference,
+  Firestore,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection,
+  addDoc,
+  deleteDoc,
+  collectionData,
+  Timestamp,
+  serverTimestamp,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  DocumentData,
+  FieldValue,
+  where,
+  FieldPath,
+  getDocs,
+} from '@angular/fire/firestore';
+import {
+  Storage,
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+} from '@angular/fire/storage';
+import { getToken, Messaging, onMessage } from '@angular/fire/messaging';
+import { Router } from '@angular/router';
+import { AppUser } from 'src/app/services/models/models';
+import { v4 as uuid } from 'uuid';
 import { environment } from '../../environments/environment';
 export class AuthInfo {
-  constructor(public $uid: string) { }
+  constructor(public $uid: string) {}
 
   isLoggedIn() {
     return !!this.$uid;
   }
 }
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BackendService {
   static UNKNOWN_USER = new AuthInfo('');
-  public authInfo$: BehaviorSubject<AuthInfo> = new BehaviorSubject<AuthInfo>(BackendService.UNKNOWN_USER);
-  constructor( private adb: AngularFirestore,
-    private fireAuth: AngularFireAuth,
+  public authInfo$: BehaviorSubject<AuthInfo> = new BehaviorSubject<AuthInfo>(
+    BackendService.UNKNOWN_USER
+  );
 
-  ) { }
+  firestore: Firestore = inject(Firestore);
+  auth: Auth = inject(Auth);
+  storage: Storage = inject(Storage);
+  messaging: Messaging = inject(Messaging);
+  router: Router = inject(Router);
+  private provider = new GoogleAuthProvider();
 
-  
-  getFoods(id: String)  {
-    return new Promise<any>((resolve, reject) => {
-    this.adb.collection('foods', ref => ref.where('restaurant.uid', '==', id)).get().subscribe(async (venue) => {
-      
-      let data = venue.docs.map(element => {
-        let item = element.data() as any;
-        console.log(item);    
-        item.uid = element.id;
-        return item;
-      });
-      resolve(data);
-    }, error => {
-      reject(error);
-    });
-  });
-}
-  public createDriver(
-    email: string,
-    password: string,
-    fullname: string,
-    coverImage: string,
-    descriptions: string,
-    phone: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.fireAuth.createUserWithEmailAndPassword(email, password)
-        .then(res => {
-          if (res.user) {
-            this.adb.collection('users').doc(res.user.uid).set({
-              uid: res.user.uid,
-              email: email,
-              fullname: fullname,
-              coverImage: coverImage,
-              descriptions: descriptions,
-              fcm_token: '',
-              lat: '',
-              lng: '',
-              phone: phone,
-              status: 'active',
-              type: 'driver',
-              id: res.user.uid,
-              current: 'active'
-            });
-            resolve(res.user);
-          }
-        })
-        .catch(err => {
+  // observable that is updated when the auth state changes
+  user$ = user(this.auth);
+  currentUser: User | null = this.auth.currentUser;
+  userSubscription: Subscription;
+  constructor() {}
 
-          this.authInfo$.next(BackendService.UNKNOWN_USER);
-          reject(`login failed ${err}`);
-        });
-    });
-  }
-  public getMyOrders(id): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('orders', ref => ref.where('userId', '==', id)).get().subscribe(async (venue) => {
-        let data = venue.docs.map(element => {
-          let item = element.data() as any;
-          item.vid.get().then(function (doc) {
-            item.vid = doc.data();
-            item.vid.id = doc.id;
-          });
-          item.id = element.id;
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  public getMyAddress(uid: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('address').doc(uid).collection('all').get().subscribe((data) => {
-        var users = data.docs.map(doc => {
-          var item = doc.data() as any;
-          item.id = doc.id;
-          return item;
-        });
-        resolve(users);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  public getCommons(): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('commons').doc('app').get().subscribe((data:any) => {
-        console.log("commons: ",data.data());
-       
-        resolve(data.data());
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  public getMyReviews(id): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('reviews', ref => ref.where('id', '==', id)).get().subscribe(async (review) => {
-        let data = review.docs.map((element) => {
-          let item = element.data() as any;
-          item.id = element.id;
-          if (item && item.vid) {
-            item.vid.get().then(function (doc) {
-              item.vid = doc.data();
-            });
-          }
+  getFirebaseDataMultiple = (
+    collectionName: string,
+    limitNo: number,
+    row: string,
+    rowValue: string,
+    row1: string,
+    rowValue1: string
+  ) => {
+    let dataQuery = query(
+      collection(this.firestore, collectionName),
+      // orderBy('uid', 'desc'),
+      where(row, '==', rowValue),
+      where(row1, '==', rowValue1),
+      limit(limitNo)
+    );
 
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
+    return collectionData(dataQuery);
+  };
+
+  getFirebaseData = (
+    collectionName: string,
+    limitNo: number,
+    row: string,
+    rowValue: string
+  ) => {
+    let dataQuery = query(
+      collection(this.firestore, collectionName),
+      // orderBy('uid', 'desc'),
+      where(row, '==', rowValue),
+      limit(limitNo)
+    );
+
+    return collectionData(dataQuery);
+  };
+
+  getSingleFirebaseDocument = (
+    collectionName: string,
+    fieldName: string,
+    fieldValue: string
+  ) => {
+    let dataQuery = query(
+      collection(this.firestore, collectionName),
+      where(fieldName, '==', fieldValue)
+    );
+
+    return getDocs(dataQuery).then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        console.log('No matching documents found.');
+        return null;
+      } else {
+        return querySnapshot.docs[0].data();
+      }
     });
-  }
-  public getMyProfile(id): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('users').doc(id).get().subscribe((users: any) => {
-        resolve(users.data());
-      }, error => {
-        reject(error);
-      });
-    });
-  }
- 
-  public create(collection: string,informations: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection(collection).doc(informations.uid).set(informations).then((data) => {
-        resolve(data);
-      }, error => {
-        reject(error);
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-  public currentDate(): string{
+  };
+
+  getAllData = (collectionName: string, limitNo: number) => {
+    let dataQuery = query(
+      collection(this.firestore, collectionName),
+      // orderBy('timestamp', 'desc'),
+      limit(limitNo)
+    );
+
+    return collectionData(dataQuery);
+  };
+
+  createCollection = async (
+    collectionName,
+    collectionData
+  ): Promise<void | DocumentReference<DocumentData>> => {
+    try {
+      collectionData.uid = uuid();
+      const newDataRef = await addDoc(
+        collection(this.firestore, collectionName),
+        collectionData
+      );
+      return newDataRef;
+    } catch (error) {
+      console.error('Error writing new message to Firebase Database', error);
+      return;
+    }
+  };
+
+  updateDocument = async (
+    collectionName: string,
+    documentId: string,
+    documentData: DocumentData
+  )=> {
+    try {
+      const docRef = doc(this.firestore, collectionName, documentId);
+      await updateDoc(docRef, documentData);
+    } catch (error) {
+      console.error('Error updating document', error);
+      throw error;
+    }
+  };
+
+  deleteDocument = async (
+    collectionName: string,
+    documentId: string
+  ) => {
+    try {
+      const docRef = doc(this.firestore, collectionName, documentId);
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.error('Error deleting document', error);
+      throw error;
+    }
+  };
+
+  getDocumentByUID = async (collectionName: string, uid: string) => {
+    try {
+      const docRef = doc(this.firestore, collectionName, uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data: any = docSnap.data();
+        data.id = docSnap.id;
+        return data;
+      } else {
+        console.log('No such document!');
+        return null;
+      }
+    } catch (error) {
+      console.log('Error getting document:', error);
+      return null;
+    }
+  };
+
+  getFoods = (id: string) => {
+    return this.getFirebaseData('foods', 10, 'restaurant.uid', id);
+  };
+  public createDriver = async (driver:AppUser) => {
+    return this.createUser(driver);
+  };
+
+  createUser = async (driver:AppUser)  => {
+    return this.createCollection('users', driver);
+  };
+
+  public getMyOrders = (id) => {
+    return this.getFirebaseData('orders', 10, 'restaurantId', id);
+  };
+  public getMyAddress = (uid: any) => {
+    return this.getDocumentByUID('address', uid);
+  };
+  public getCommons = () => {
+    return this.getDocumentByUID('commons', 'app');
+  };
+  public getMyReviews = (id) => {
+    return this.getFirebaseData('reviews', 10, 'id', id);
+  };
+  public getMyProfile = (id) => {
+    return this.getDocumentByUID('users', id);
+  };
+
+  public create = async (
+    collection: string,
+    informations: any
+  ) => {
+    return this.createCollection(collection, informations);
+  };
+
+  public currentDate(): string {
     const timestamp = Date.now();
-const date = new Date(timestamp);
-console.log(date.toLocaleString());
-return date.toLocaleString();
+    const date = new Date(timestamp);
+    console.log(date.toLocaleString());
+    return date.toLocaleString();
   }
-  public register(emails: string, pwd: string, fnames: string,
-     lnames: string, imageUrl: string, type: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.fireAuth.createUserWithEmailAndPassword(emails, pwd)
-        .then(res => {
-          if (res.user) {
-            this.adb.collection('users').doc(res.user.uid).set({
-              uid: res.user.uid,
-              email: emails,
-              fname: fnames,
-              lname: lnames,
-              fullname: fnames + ' ' + lnames,
-              type: type,
-              coverImage: imageUrl,
-              status: 'active',
-              isLogged: false,
-              activity:  firebase.firestore.FieldValue.serverTimestamp()
-            });
-            this.authInfo$.next(new AuthInfo(res.user.uid));
-            resolve(res.user);
-          }
-        })
-        .catch(err => {
 
-          this.authInfo$.next(BackendService.UNKNOWN_USER);
-          reject(`login failed ${err}`);
-        });
-    });
-  }
+  public register = async (user:AppUser)  => {
+    return this.createUser(user);
+  };
+
   public checkEmail(email: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.fireAuth.fetchSignInMethodsForEmail(email).then((info: any) => {
-        resolve(info);
-      }).catch(error => {
-        reject(error);
-      });
-    });
+    return new Promise<any>((resolve, reject) => {});
   }
-  public getRestReview(id): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('reviews', ref => ref.where('restId', '==', id)).get().subscribe(async (review) => {
-        let data = review.docs.map((element) => {
-          let item = element.data() as any;
-          item.id = element.id;
-          if (item && item.uid) {
-            item.uid.get().then(function (doc:any) {
-              item.uid = doc.data();
-            });
-          }
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  public getRestOrders(id): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('orders', ref => ref.where('restId', '==', id)).get().subscribe((venue) => {
-        let data = venue.docs.map(element => {
-          let item = element.data() as any;
-          item.uid.get().then(function (doc) {
-            item.uid = doc.data();
-            item.uid.id = doc.id;
-          });
-          item.id = element.id;
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  public getVenueDetails(id): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('venue').doc(id).get().subscribe((venue: any) => {
-        resolve(venue.data());
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  public updateProfile(uid, param): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('users').doc(uid).update(param).then((data) => {
-        resolve(data);
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-  public updateVenue(informations: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('venue').doc(informations.uid).update(informations).then((data) => {
-        resolve(data);
-      }, error => {
-        reject(error);
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-  public updateCity(informations: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('cities').doc(informations.id).update(informations).then((data) => {
-        resolve(data);
-      }, error => {
-        reject(error);
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-  public deleteCity(informations: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('cities').doc(informations.id).delete().then((data) => {
-        resolve(data);
-      }, error => {
-        reject(error);
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-  public addCity(id, param): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('cities').doc(id).set(param).then((data) => {
-        resolve(data);
-      }, error => {
-        reject(error);
-      }).catch(error => {
-        reject(error);
-      });
-    });
-  }
-  getCities(): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('cities').get().subscribe((venue: any) => {
-        let data = venue.docs.map(element => {
-          let item = element.data();
-          item.id = element.id;
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
+
+  public getRestReview = (id) => {
+    return this.getFirebaseData('reviews', 10, 'restId', id);
+  };
+
+  public getRestOrders = (id) => {
+    return this.getFirebaseData('orders', 10, 'restId', id);
+  };
+
+  public getVenueDetails = (id) => {
+    return this.getDocumentByUID('venue', id);
+  };
+
+  public updateProfile = async (uid, param) => {
+    return this.updateDocument('users', uid, param);
+  };
+  public updateVenue = async (informations: any) => {
+    return this.updateDocument('venue', informations.id, informations);
+  };
+  public updateCity = async (informations: any) => {
+    return this.updateDocument('cities', informations.id, informations);
+  };
+  public deleteCity = async (informations: any) => {
+    return this.deleteDocument('cities', informations.id);
+  };
+  public addCity = async (param) => {
+    return this.createCollection('cities', param);
+  };
+
+  getCities = () => {
+    return this.getAllData('cities', 10);
+  };
+
   getCurrecySymbol() {
     return environment.general.symbol;
   }
-  getAllOrders() : Promise<any>{
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('orders').get().subscribe((orders) => {
-        let data = orders.docs.map(element => {
-          let item = element.data() as any;
-          item.id = element.id;
-          item.vid.get().then(function (doc) {
-            item.vid = doc.data();
-            item.vid.id = doc.id;
-          });
-          item.uid.get().then(function (doc) {
-            item.uid = doc.data();
-            item.uid.id = doc.id;
-          });
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  getSingleVenues(email: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('venue', ref => ref.where('email', '==', email))
-        // .limit(1)
-        .get()
-        .subscribe((querySnapshot) => {
-          if (querySnapshot.empty) {
-            reject('No venue found with the provided email.');
-          } else {
-            const venue = querySnapshot.docs[0].data();
-            console.log(venue);
-            resolve(venue);
-          }
-        }, error => {
-          reject(error);
-        });
-    });
-  }
-  getVenues(): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('venue').get().subscribe((venue) => {
-        let data = venue.docs.map(element => {
-          let item = element.data() as any;
-          item.id = element.id;
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  getSupplies(restaurantId: String): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('supply',(ref:any) => ref.where('restaurant.uid', '==', restaurantId)).get().subscribe((venue) => {
-      // this.adb.collection('supply').get().subscribe((venue) => {
-        let data = venue.docs.map(element => {
-          let item = element.data() as any;
-          item.id = element.id;
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  public getAdmin(): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('users', (ref:any) => ref.where('type', '==', 'admin')).get().subscribe(async (review:any) => {
-        console.log(review);
-        let data = review.docs.map((element:any) => {
-          let item = element.data() as any;
-          item.id = element.id;
-          return item;
-        });
-        resolve(data);
-      }, (error:any) => {
-        reject(error);
-      });
-    });
-  }
-  public getSpecificItems(collection:string,column: string,value:string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection(collection, (ref:any) => ref.where(column, '==', value).limit(10)).get().subscribe(async (review:any) => {
-        console.log(review);
-        let data = review.docs.map((element:any) => {
-          let item = element.data() as any;
-          item.id = element.id;
-          return item;
-        });
-        resolve(data);
-      }, (error:any) => {
-        reject(error);
-      });
-    });
-  }
-  public createAdminProfile(emails: string, pwd: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.fireAuth.createUserWithEmailAndPassword(emails, pwd)
-        .then(res => {
-          console.log("userResponse",res);
-          if (res.user) {
-            this.adb.collection('users').doc(res.user.uid).set({
-              uid: res.user.uid,
-              email: emails,
-              fname: 'Admin',
-              lname: '',
-              fullname: 'Admin',
-              type: 'admin',
-              status: 'active',
-              coverImage: 'assets/images/user.png',
-              isLogged: false,
-              activity:  firebase.firestore.FieldValue.serverTimestamp()
-            });
-           
-            this.authInfo$.next(new AuthInfo(res.user.uid));
-            resolve(res.user);
-          }
-        })
-        .catch((err:any) => {
 
-          this.authInfo$.next(BackendService.UNKNOWN_USER);
-          reject(`login failed ${err}`);
-        });
-    });
-  }
-  public getUsers(): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('users').get().subscribe((users) => {
-        let data = users.docs.map(element => {
-          let item = element.data() as any;
-          item.id = element.id;
-          return item;
-        });
-        resolve(data);
-      }, error => {
-        reject(error);
-      });
-    });
-  }
+  getAllOrders = () => {
+    return this.getAllData('orders', 10);
+  };
+
+  getSingleVenues = (email: string) => {
+    console.log('get venue for email: ', email);
+    return this.getSingleFirebaseDocument('venue', 'email', email);
+  };
+
+  getVenues = () => {
+    return this.getAllData('venue', 10);
+  };
+
+  getSupplies = (restaurantId: string) => {
+    return this.getFirebaseData('supply', 10, 'restId', restaurantId);
+  };
+
+  public getAdmin = () => {
+    return this.getFirebaseData('users', 10, 'type', 'admin');
+  };
+
+  public getSpecificItems =  (
+    collection: string,
+    column: string,
+    value: string
+  )  => {
+    return this.getFirebaseData(collection, 10, column, value);
+  };
+
+  public createAdminProfile = async (user:AppUser): Promise<any> => {
+    return this.createUser(user);
+  };
+
+  public getUsers = () => {
+    return this.getFirebaseData('users', 10, 'type', 'owner');
+  };
+
   public checkAuth() {
     return new Promise((resolve, reject) => {
-      this.fireAuth.onAuthStateChanged(user => {
-        console.log(user);
-        if (user != null) {
-          localStorage.setItem('uid', user.uid);
-          resolve(user);
+      signInWithPopup(this.auth, this.provider).then((result) => {
+        resolve(result);
+      }).catch((error) => {
+        reject(error);
+      })
+    });
+  }
+
+  public logout = () => {
+    this.logoutWithGoogle();
+  };
+
+  public getProfile = (id) => {
+    return this.getFirebaseData('users', 10, 'email', id);
+  };
+
+  public login = () => {
+    this.loginWithGoogle();
+  };
+
+  // Signs-in Friendly Chat.
+  loginWithGoogle = () => {
+    signInWithPopup(this.auth, this.provider).then((result) => {
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      this.getProfile(result.user.email).subscribe((data: any) => {
+        if (data) {
+          // this.authInfo$.next(BackendService(data.uid));
+          if (data.type === 'admin') {
+            this.router.navigate(['admin-dashboard',JSON.stringify(data)]);
+          } else {
+            this.router.navigate(['dashboard',JSON.stringify(data)]);
+          }
         } else {
-          this.logout();
-          localStorage.clear();
-          resolve(false);
+          //   this.createUser(result.user.email, result.user.uid, result.user.photoURL, result.user.displayName, 'customer').then((data: any) => {
+          //     if(data){
+          // this.router.navigate(['auth']);
+          //     }
+          //   })
         }
       });
-    });
-  }
-  public logout(): Promise<void> {
-    this.authInfo$.next(BackendService.UNKNOWN_USER);
-    
-    // this.db.collection('users').doc(localStorage.getItem('uid')).update({ "fcm_token": firebase.firestore.FieldValue.delete() })
-    return this.fireAuth.signOut();
-  }
-  public getProfile(id): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adb.collection('users').doc(id).get().subscribe((profile: any) => {
-        resolve(profile.data());
-      }, error => {
-        reject(error);
-      });
-    });
-  }
-  public login(email: string, password: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.fireAuth.signInWithEmailAndPassword(email, password)
-        .then(res => {
-          console.log("userResponse",res);
-          if (res.user) {
-            this.authInfo$.next(new AuthInfo(res.user.uid));
-            resolve(res.user);
-          }
-        })
-        .catch(err => {
 
-          this.authInfo$.next(BackendService.UNKNOWN_USER);
-          reject(`login failed ${err}`);
-        });
+      return credential;
     });
+  }
+
+  // Logout of Friendly Chat.
+  logoutWithGoogle() {
+    this.authInfo$.next(BackendService.UNKNOWN_USER);
+    signOut(this.auth)
+      .then(() => {
+        this.router.navigate(['/', 'auth']);
+        console.log('signed out');
+      })
+      .catch((error) => {
+        console.log('sign out error: ' + error);
+      });
   }
 }

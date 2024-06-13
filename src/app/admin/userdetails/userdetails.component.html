@@ -22,7 +22,7 @@
   
                     <div class="col-4 b-r-default text-center">
                       <p class="text-muted"> Orders </p>
-                      <span>{{myOrders.length}}</span>
+                      <span>{{(myOrders$ | async)?.length }}</span>
                     </div>
                     <div class="col-4 b-r-default text-center">
                       <p class="text-muted"> Address </p>
@@ -30,7 +30,7 @@
                     </div>
                     <div class="col-4 b-r-default text-center">
                       <p class="text-muted"> Reviews </p>
-                      <span>{{reviews.length}}</span>
+                      <span>{{(reviews$ | async)?.length }}</span>
                     </div>
                   </div>
                 </div>
@@ -52,7 +52,7 @@
                   <c-tab-pane  class="p-3 ">
                     <div >
                       <div class="orders">
-                        <div class="card_div" *ngFor="let item of myOrders">
+                        <div class="card_div" *ngFor="let item of myOrders$ | async">
   
                           <div class="resto_detail">
                             <div class="back_image" [style.backgroundImage]="'url('+item.vid.cover+')'"></div>
@@ -138,7 +138,7 @@
                   <c-tab-pane  class="p-3 ">
                     <div >
                       <div class="review">
-                        <div class="row" *ngFor="let item of reviews"
+                        <div class="row" *ngFor="let item of reviews$ | async"
                           style="border-bottom: 1px solid lightgray;padding: 10px;">
                           <div class="col-md-2">
                             <img height="100" width="100" src="{{item.cover}}" alt=""

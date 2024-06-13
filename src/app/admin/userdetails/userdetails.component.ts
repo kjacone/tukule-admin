@@ -3,6 +3,7 @@ import { BackendService,CommonService } from 'src/app/services';
 import { SHARED } from '../../shared';
 import { ActivatedRoute,RouterLink} from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-userdetails',
@@ -20,13 +21,13 @@ export class UserdetailsComponent  implements OnInit{
     body: '',
   };
   confirm = false;
-  myOrders: any[] = [];
   id: any;
   myaddress: any[] = [];
-  reviews: any[] = [];
   name: any = '';
   email: any = '';
   photo: any = '';
+  reviews$: Observable<any[]>;
+  myOrders$:  Observable<any[]>;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,6 +39,7 @@ export class UserdetailsComponent  implements OnInit{
       console.log(data);
       if (data && data.id) {
         this.id = data.id;
+
         this.getProfile();
         this.getMyOrders();
         this.getAddress();
@@ -57,14 +59,7 @@ export class UserdetailsComponent  implements OnInit{
         this.name = data.fullname;
         this.photo = data && data.coverImage ? data.coverImage : 'assets/icon.png';
         this.email = data.email;
-        this.api.getMyReviews(data.uid).then((reviews) => {
-          console.log(reviews);
-          this.reviews = reviews;
-        }, error => {
-          console.log(error);
-        }).catch(error => {
-          console.log(error);
-        });
+      this.reviews$=  this.api.getMyReviews(data.uid);
       }
     }).catch(error => {
       console.log(error);
@@ -82,26 +77,17 @@ export class UserdetailsComponent  implements OnInit{
       console.log(error);
     });
   }
-  getMyOrders() {
-    this.api.getMyOrders(this.id).then((data: any) => {
-      console.log('my orders', data);
-      if (data && data.length) {
-        data.forEach(element => {
-          element.time = new Date(element.time);
-        });
-        data.sort((a, b) => b.time - a.time);
-        this.myOrders = data;
-        this.myOrders.forEach(element => {
-          element.order = JSON.parse(element.order);
-        });
-        console.log('my order==>', this.myOrders);
-      }
-    }, error => {
-      console.log(error);
-    }).catch(error => {
-      console.log(error);
-    });
-  }
+getMyOrders() {
+  const orderData :any = this.api.getMyOrders(this.id);
+  this.myOrders$ = orderData
+    .map(element => ({
+      ...element,
+      time: new Date(element.time),
+      order: JSON.parse(element.order)
+    }))
+    .sort((a, b) => b.time.getTime() - a.time.getTime());
+  console.log(this.myOrders$);
+}
 
   getDate(date) {
     return this.comm.getDate(date);

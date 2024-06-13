@@ -3,18 +3,20 @@ import { BackendService, CommonService } from 'src/app/services';
 import { SHARED } from '../../shared';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { Location } from '@angular/common';
+import { AsyncPipe, Location } from '@angular/common';
 import firebase from 'firebase/compat/app';
+import { FoodItem } from 'src/app/services/models/models';
+import { serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-food-details',
   standalone: true,
-  imports: [SHARED, RouterLink],
+  imports: [SHARED, RouterLink,AsyncPipe],
   templateUrl: './food-details.component.html',
   styleUrl: './food-details.component.scss',
 })
 export class FoodDetailsComponent implements OnInit {
-  dropdownList:any = [];
+  dropdownList:any []= [];
   selectedAccompaniments = [];
   dropdownSettings = {};
   dropdownSettings1 = {};
@@ -47,8 +49,8 @@ export class FoodDetailsComponent implements OnInit {
   storageConditionList: any[];
   id: any;
   selectedTags: any;
-  dropdownList1: any[];
-  menuNameList: any[];
+  dropdownList1: any=[];
+  menuNameList: any=[];
   constructor(
     private route: ActivatedRoute,
     private api: BackendService,
@@ -98,26 +100,24 @@ export class FoodDetailsComponent implements OnInit {
   create(): any {
     this.loading = true;
 
-    const param = {
-      uid: this.comm.generateRandomUid(),
+    const param:FoodItem = {
       name: this.name,
       uom: this.uom,
       category: this.category,
-      menu_name: this.menuName,
-      food_image: this.foodImage,
+      menuName: this.menuName,
+      foodImage: this.foodImage,
       description: this.description,
       quantity: this.qty,
       instock: this.qty,
-      ordered_quantity: 0,
+      orderedQuantity: 0,
       veg: true,
       cost: this.cost,
       discount: this.discount,
       reorder: this.reorder,
       tags: this.selectedTags,
-      supplys_used: this.formData,
+      supplysUsed: this.formData,
       accompaniments: this.selectedAccompaniments,
-      created_at: firebase.firestore.FieldValue.serverTimestamp(),
-      created_by: {
+      createdBy: {
         name: this.comm.getCurrentUser().user.fullname,
         uid: this.comm.getCurrentUser().user.uid,
       },
@@ -125,6 +125,8 @@ export class FoodDetailsComponent implements OnInit {
         name: this.comm.getCurrentRestaurant().name,
         uid: this.comm.getCurrentRestaurant().uid,
       },
+      extras: [],
+      createdAt: serverTimestamp(),
     };
     console.log('param', param);
     this.api
@@ -165,15 +167,12 @@ export class FoodDetailsComponent implements OnInit {
 
   getFoods() {
     this.api.getFoods(this.comm.getCurrentRestaurant().uid)
-      .then((data) => {
+      .subscribe((data) => {
         console.log(data);
         data.forEach((element: any) => {
           this.dropdownList.push(element.name);
         });
         this.dropdownList = [...this.dropdownList];
-      })
-      .catch((error) => {
-        console.log(error);
       });
   }
 
@@ -201,12 +200,9 @@ export class FoodDetailsComponent implements OnInit {
   }
   getSupplies() {
     this.api.getSupplies(this.comm.getCurrentRestaurant().uid)
-    .then((data) => {
+    .subscribe((data) => {
       console.log(data);
-      this.options = data;
-    })
-    .catch((error) => {
-      console.log(error);
+      this.options = [...data];
     });
 }
 

@@ -20,7 +20,8 @@ dummy: any;
     private api: BackendService,private comm: CommonService
     ,private router: Router
   ) {
-    this.getFoods(this.comm.getCurrentRestaurant().uid);
+
+    this.getFoods();
   }
   visible = false;
   loading = false;
@@ -37,16 +38,15 @@ dummy: any;
     console.log('Confirmed! Perform the action here.');
   }
 
-  getFoods(restaurantId: String) {
-    this.api.getFoods(restaurantId).then((data) => {
+  getFoods() {
+
+    const restId = this.comm.getCurrentRestaurant().restaurantCode;
+    this.api.getFoods(restId).subscribe((data) => {
       console.log('foods data', data);
-      this.foods = data;
-      this.dummyRest = data;
+      this.foods = [...data];
+      this.dummyRest = [...data];
       this.dummy = [];
     }, error => {
-      console.log(error);
-      this.dummy = [];
-    }).catch(error => {
       console.log(error);
       this.dummy = [];
     });

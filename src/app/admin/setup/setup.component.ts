@@ -22,6 +22,8 @@ import {
 import { IconDirective } from '@coreui/icons-angular';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { serverTimestamp } from '@angular/fire/firestore';
+import { AppUser } from 'src/app/services/models/models';
 
 @Component({
   selector: 'app-setup',
@@ -61,13 +63,25 @@ export class SetupComponent {
   ) {}
 
   login(): any {
-    if (!this.email || !this.password) {
-      this.commonService.openSnackBar('Validation Error All Fields are required');
-      return false;
-    }
+   
     this.isLoading = true;
+    const param: AppUser = {
+      email: this.email,
+      fullName: 'admin',
+      coverImage: '',
+      restaurantCode: '',
+      fcmToken: '',
+      lat: '',
+      lng: '',
+      phone: '',
+      status: 'active',
+      type: 'deliver',
+      idnumber: '',
+      current: 'active',
+      createdAt: serverTimestamp(),
+    }
     this.api
-      .createAdminProfile(this.email, this.password)
+      .createAdminProfile(param)
       .then(
         (data) => {
           console.log(data);

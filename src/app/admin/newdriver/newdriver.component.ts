@@ -4,6 +4,8 @@ import { SHARED } from '../../shared';
 import { ActivatedRoute,RouterLink} from '@angular/router';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Location } from '@angular/common';
+import { serverTimestamp } from '@angular/fire/firestore';
+import { AppUser } from 'src/app/services/models/models';
 @Component({
   selector: 'app-newdriver',
   standalone: true,
@@ -41,16 +43,13 @@ export class NewdriverComponent implements OnInit {
       if (!this.new && data.id) {
         this.loading = true;
         this.id = data.id;
-        this.api.getProfile(data.id).then(data => {
+        this.api.getProfile(data.id).subscribe((data:any) => {
           this.loading = false;
           console.log(data);
           this.coverImage = data.coverImage;
           this.fullname = data.fname + ' ' + data.lname;
           this.email = data.email;
           this.phone = data.phone;
-        }).catch(error => {
-          this.loading = false;
-          console.log(error);
         });
       }
     });
@@ -135,7 +134,24 @@ export class NewdriverComponent implements OnInit {
     this.loading = true;
     this.api.checkEmail(this.email).then((datas: any) => {
       if (!datas.length) {
-        this.api.createDriver(this.email, this.password, this.fullname, this.coverImage, '', this.phone).then((data) => {
+        const param: AppUser = {
+          email: this.email,
+          fullName: this.fullname,
+          coverImage: this.coverImage,
+          restaurantCode: '',
+          fcmToken: '',
+          lat: '',
+          lng: '',
+          phone: this.phone,
+          status: 'active',
+          type: 'deliver',
+          idnumber: '',
+          current: 'active',
+          createdAt: serverTimestamp(),
+        }
+
+
+        this.api.createDriver(param).then((data) => {
           this.loading = false;
           console.log(data);
           this.comm.openSnackBar('Success Driver Created');

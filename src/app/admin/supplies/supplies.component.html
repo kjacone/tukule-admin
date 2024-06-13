@@ -84,7 +84,7 @@
                 </td>
                
               </tr>
-              <tr *ngFor="let item of supplies;let i = index">
+              <tr *ngFor="let item of supplies | async;let i = index">
                 <td class="text-center"><a href="javascript:;"><img class="img-responsive"
                       style="height: 50px;" [src]="item.supply_image"
                       onError="this.src='assets/images/supply.png'" alt="chat-user"></a>

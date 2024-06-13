@@ -1,7 +1,9 @@
-import { Component ,OnInit} from '@angular/core';
-import { BackendService,CommonService } from 'src/app/services';
+import { Component, OnInit } from '@angular/core';
+import { NavigationExtras, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { BackendService, CommonService } from 'src/app/services';
 import { SHARED } from '../../shared';
-import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-supplies',
@@ -11,8 +13,8 @@ import { Router, NavigationExtras } from '@angular/router';
   styleUrl: './supplies.component.scss'
 })
 export class SuppliesComponent implements OnInit {
-  supplies: any[] = [];
-  dummyRest: any[] = [];
+  supplies:  Observable<any[]>;
+  dummyRest:  Observable<any[]>;
   dummy = Array(10);
   instock: string;
   constructor(
@@ -37,19 +39,10 @@ export class SuppliesComponent implements OnInit {
     console.log('Confirmed! Perform the action here.');
   }
 
-  getSupplies(restaurantId: String) {
-    this.api.getSupplies(restaurantId).then((data) => {
-      console.log('supplies data', data);
-      this.supplies = data;
-      this.dummyRest = data;
+  getSupplies(restaurantId: string) {
+    this.supplies = this.api.getSupplies(restaurantId);
+    this.dummyRest = this.supplies;
       this.dummy = [];
-    }, error => {
-      console.log(error);
-      this.dummy = [];
-    }).catch(error => {
-      console.log(error);
-      this.dummy = [];
-    });
   }
 
   search(string) {
@@ -65,14 +58,15 @@ export class SuppliesComponent implements OnInit {
 
   setFilteredItems() {
     console.log('clear');
-    this.supplies = [];
+    this.supplies = new Observable();
     this.supplies = this.dummyRest;
   }
 
   filterItems(searchTerm) {
-    return this.supplies.filter((item) => {
+    return this.supplies.pipe(
+      filter((item:any) => {
       return item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
-    });
+    }));
 
   }
 

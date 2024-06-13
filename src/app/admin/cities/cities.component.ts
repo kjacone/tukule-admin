@@ -33,13 +33,9 @@ export class CitiesComponent implements OnInit {
   getCity() {
     this.api
       .getCities()
-      .then((data) => {
+      .subscribe((data) => {
         console.log(data);
-        this.cities = data;
-        this.dummy = [];
-      })
-      .catch((error) => {
-        console.log(error);
+        this.cities = [...data];
         this.dummy = [];
       });
   }

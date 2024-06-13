@@ -1,3 +1,4 @@
+@if (users.length > 0) {
 <c-card class="mb-4" >
   
     <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
@@ -6,7 +7,7 @@
           <th class="bg-body-tertiary text-center">
             <svg cIcon name="cilPeople"></svg>
           </th>
-          <th class="bg-body-tertiary">{{user | uppercase}}S</th>
+          <th class="bg-body-tertiary">Users</th>
           <th class="bg-body-tertiary text-center">Status</th>
           <th class="bg-body-tertiary text-center">Activity</th>
         </tr>
@@ -59,13 +60,13 @@
   
   
   
-@for (user of users.slice(0, 10); track user.fname; let i = $index) {
+@for (user of users.slice(0, 10); track user.fullname; let i = $index) {
         <tr>
           <td class="text-center">
             <c-avatar [size]="'md'" [src]="user.coverImage" [status]="user.status === 'active' ? 'success' : 'danger'" />
           </td>
           <td>
-            <div>{{ user.fname }} {{ user.lname }}</div>
+            <div>{{ user.fullName }} </div>
             <div class="text-body-secondary text-nowrap">
               <span>
                 {{ user.email }}
@@ -88,7 +89,7 @@
           <td class="text-center">
             <div class="small text-body-secondary">Last login</div>
             <div class="fw-semibold text-nowrap">
-              {{ user.activity.toDate() | date }}
+              {{ user.createdAt.toDate() | date }}
             </div>
           </td>
         
@@ -97,3 +98,4 @@
       </tbody>
     </table>
 </c-card>
+}

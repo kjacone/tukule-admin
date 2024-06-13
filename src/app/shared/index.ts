@@ -26,7 +26,7 @@ import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, Tex
      ProgressBarComponent,
      ProgressBarDirective,
      ProgressComponent,
-     TableDirective, TemplateIdDirective, WidgetStatFComponent 
+     TableDirective, TemplateIdDirective, WidgetStatFComponent ,CardModule,GridModule,
     } from '@coreui/angular';   
       import { ChartjsComponent } from '@coreui/angular-chartjs';
 
@@ -61,5 +61,5 @@ export const SHARED: Provider[] = [
     GutterDirective,
     ProgressBarDirective,ProgressBarComponent,
     ProgressComponent,
-    TableDirective,
+    TableDirective,CardModule,GridModule
 ];

@@ -4,6 +4,8 @@ import {Location as AutoCompleteLocation} from '@angular-material-extensions/goo
 import { Location } from '@angular/common';
 import { SHARED } from '../../shared';
 import PlaceResult = google.maps.places.PlaceResult;
+import { CityItem } from 'src/app/services/models/models';
+import { serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-newcities',
@@ -58,17 +60,18 @@ export class NewcitiesComponent implements OnInit {
       this.comm.openSnackBar('Please select valid city name');
       return false;
     }
-    const id = Math.floor(100000000 + Math.random() * 900000000);
-    const param = {
+   let id  = this.comm.generateRandomUid()
+    const param:CityItem = {
       name: this.city,
       status: 'active',
-      id: id.toString(),
+      id: id,
       lat: this.lat,
-      lng: this.lng
+      lng: this.lng,
+      createdAt: serverTimestamp()
     };
-    console.log('ok', param, id.toString());
+    console.log('ok', param, param.id.toString());
     this.loading = true;
-    this.api.addCity(id.toString(), param).then(data => {
+    this.api.addCity( param).then(data => {
       this.loading = false;
       console.log(data);
       this.comm.openSnackBar('Success City Added');
