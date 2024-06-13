@@ -67,8 +67,7 @@ export class NewcitiesComponent implements OnInit {
       id: id,
       lat: this.lat,
       lng: this.lng,
-      uid: id,
-      created_at: serverTimestamp()
+      createdAt: serverTimestamp()
     };
     console.log('ok', param, param.id.toString());
     this.loading = true;

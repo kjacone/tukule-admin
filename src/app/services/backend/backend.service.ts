@@ -52,7 +52,7 @@ import {
 import { getToken, Messaging, onMessage } from '@angular/fire/messaging';
 import { Router } from '@angular/router';
 import { AppUser } from 'src/app/services/models/models';
-
+import { v4 as uuid } from 'uuid';
 import { environment } from '../../environments/environment';
 export class AuthInfo {
   constructor(public $uid: string) {}
@@ -83,6 +83,25 @@ export class BackendService {
   userSubscription: Subscription;
   constructor() {}
 
+  getFirebaseDataMultiple = (
+    collectionName: string,
+    limitNo: number,
+    row: string,
+    rowValue: string,
+    row1: string,
+    rowValue1: string
+  ) => {
+    let dataQuery = query(
+      collection(this.firestore, collectionName),
+      // orderBy('uid', 'desc'),
+      where(row, '==', rowValue),
+      where(row1, '==', rowValue1),
+      limit(limitNo)
+    );
+
+    return collectionData(dataQuery);
+  };
+
   getFirebaseData = (
     collectionName: string,
     limitNo: number,
@@ -92,7 +111,7 @@ export class BackendService {
     let dataQuery = query(
       collection(this.firestore, collectionName),
       // orderBy('uid', 'desc'),
-      // where(row, '==', rowValue),
+      where(row, '==', rowValue),
       limit(limitNo)
     );
 
@@ -134,6 +153,7 @@ export class BackendService {
     collectionData
   ): Promise<void | DocumentReference<DocumentData>> => {
     try {
+      collectionData.uid = uuid();
       const newDataRef = await addDoc(
         collection(this.firestore, collectionName),
         collectionData
@@ -149,7 +169,7 @@ export class BackendService {
     collectionName: string,
     documentId: string,
     documentData: DocumentData
-  ): Promise<void> => {
+  )=> {
     try {
       const docRef = doc(this.firestore, collectionName, documentId);
       await updateDoc(docRef, documentData);
@@ -162,7 +182,7 @@ export class BackendService {
   deleteDocument = async (
     collectionName: string,
     documentId: string
-  ): Promise<void> => {
+  ) => {
     try {
       const docRef = doc(this.firestore, collectionName, documentId);
       await deleteDoc(docRef);
@@ -191,40 +211,13 @@ export class BackendService {
   };
 
   getFoods = (id: string) => {
-    return this.getFirebaseData('foods', 10, 'restaurantId', id);
+    return this.getFirebaseData('foods', 10, 'restaurant.uid', id);
   };
-  public createDriver = async (
-    email: string,
-    fullname: string,
-    coverImage: string,
-    descriptions: string,
-    phone: string
-  ): Promise<any> => {
-    return this.createUser(email, fullname, coverImage, descriptions, phone);
+  public createDriver = async (driver:AppUser) => {
+    return this.createUser(driver);
   };
-  createUser = async (
-    email: string,
-    fullname: string,
-    coverImage: string,
-    descriptions: string,
-    phone: string
-  ): Promise<any> => {
-    const driver: AppUser = {
-      created_at: serverTimestamp(),
-      uid: this.currentUser?.uid,
-      email: email,
-      fullname: fullname,
-      coverImage: coverImage,
-      descriptions: descriptions,
-      fcm_token: '',
-      lat: '',
-      lng: '',
-      phone: phone,
-      status: 'active',
-      type: 'driver',
-      id: this.currentUser?.uid,
-      current: 'active',
-    };
+
+  createUser = async (driver:AppUser)  => {
     return this.createCollection('users', driver);
   };
 
@@ -247,7 +240,7 @@ export class BackendService {
   public create = async (
     collection: string,
     informations: any
-  ): Promise<any> => {
+  ) => {
     return this.createCollection(collection, informations);
   };
 
@@ -258,15 +251,10 @@ export class BackendService {
     return date.toLocaleString();
   }
 
-  public register = async (
-    emails: string,
-    fnames: string,
-    lnames: string,
-    imageUrl: string,
-    type: string
-  ): Promise<any> => {
-    return this.createUser(emails, fnames, imageUrl, lnames, type);
+  public register = async (user:AppUser)  => {
+    return this.createUser(user);
   };
+
   public checkEmail(email: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {});
   }
@@ -336,11 +324,8 @@ export class BackendService {
     return this.getFirebaseData(collection, 10, column, value);
   };
 
-  public createAdminProfile = async (
-    emails: string,
-    pwd: string
-  ): Promise<any> => {
-    return this.createUser(emails, pwd, '', '', 'admin');
+  public createAdminProfile = async (user:AppUser): Promise<any> => {
+    return this.createUser(user);
   };
 
   public getUsers = () => {
@@ -349,17 +334,11 @@ export class BackendService {
 
   public checkAuth() {
     return new Promise((resolve, reject) => {
-      this.auth.onAuthStateChanged((user) => {
-        console.log(user);
-        if (user != null) {
-          localStorage.setItem('uid', user.uid);
-          resolve(user);
-        } else {
-          this.logout();
-          localStorage.clear();
-          resolve(false);
-        }
-      });
+      signInWithPopup(this.auth, this.provider).then((result) => {
+        resolve(result);
+      }).catch((error) => {
+        reject(error);
+      })
     });
   }
 
@@ -368,7 +347,7 @@ export class BackendService {
   };
 
   public getProfile = (id) => {
-    return this.getFirebaseData('users', 10, 'uid', id);
+    return this.getFirebaseData('users', 10, 'email', id);
   };
 
   public login = () => {
@@ -376,16 +355,16 @@ export class BackendService {
   };
 
   // Signs-in Friendly Chat.
-  loginWithGoogle() {
+  loginWithGoogle = () => {
     signInWithPopup(this.auth, this.provider).then((result) => {
       const credential = GoogleAuthProvider.credentialFromResult(result);
-      this.getProfile(result.user.uid).subscribe((data: any) => {
+      this.getProfile(result.user.email).subscribe((data: any) => {
         if (data) {
           // this.authInfo$.next(BackendService(data.uid));
           if (data.type === 'admin') {
-            this.router.navigate(['admin-dashboard']);
+            this.router.navigate(['admin-dashboard',JSON.stringify(data)]);
           } else {
-            this.router.navigate(['dashboard']);
+            this.router.navigate(['dashboard',JSON.stringify(data)]);
           }
         } else {
           //   this.createUser(result.user.email, result.user.uid, result.user.photoURL, result.user.displayName, 'customer').then((data: any) => {

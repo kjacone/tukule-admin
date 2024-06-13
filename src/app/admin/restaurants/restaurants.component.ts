@@ -127,13 +127,12 @@ export class RestaurantsComponent implements OnInit {
    
 
   createNew() {
-    const navData: NavigationExtras = {
-      queryParams: {
+    const navData = {
         register: true,
         id: this.comm.generateRandomUid()
       }
-    };
-    this.router.navigate(['restaurants-details'], navData);
+ 
+    this.router.navigate(['restaurants-details',navData]);
   }
 
   getCurrency() {

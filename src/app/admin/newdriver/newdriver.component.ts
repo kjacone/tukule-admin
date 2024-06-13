@@ -4,6 +4,8 @@ import { SHARED } from '../../shared';
 import { ActivatedRoute,RouterLink} from '@angular/router';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Location } from '@angular/common';
+import { serverTimestamp } from '@angular/fire/firestore';
+import { AppUser } from 'src/app/services/models/models';
 @Component({
   selector: 'app-newdriver',
   standalone: true,
@@ -132,7 +134,24 @@ export class NewdriverComponent implements OnInit {
     this.loading = true;
     this.api.checkEmail(this.email).then((datas: any) => {
       if (!datas.length) {
-        this.api.createDriver(this.email,  this.fullname, this.coverImage, '', this.phone).then((data) => {
+        const param: AppUser = {
+          email: this.email,
+          fullName: this.fullname,
+          coverImage: this.coverImage,
+          restaurantCode: '',
+          fcmToken: '',
+          lat: '',
+          lng: '',
+          phone: this.phone,
+          status: 'active',
+          type: 'deliver',
+          idnumber: '',
+          current: 'active',
+          createdAt: serverTimestamp(),
+        }
+
+
+        this.api.createDriver(param).then((data) => {
           this.loading = false;
           console.log(data);
           this.comm.openSnackBar('Success Driver Created');

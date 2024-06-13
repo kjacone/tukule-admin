@@ -35,7 +35,7 @@ canActivate(
     return user(this.auth).pipe(
     take(1),
     switchMap(user => {
-      
+      console.log('user',user)
       const isAuthenticated = !!user;
       if (!isAuthenticated) {
         console.log('not authenticated');

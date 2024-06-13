@@ -1,0 +1,64 @@
+@if (orders.length > 0) {
+    <c-card class="mb-4" >
+      
+        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+          <thead class="text-nowrap text-truncate">
+            <tr>
+              <th class="bg-body-tertiary text-center">
+                <svg cIcon name="cilPeople"></svg>
+              </th>
+              <th class="bg-body-tertiary">Top Selling Foods</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of dummy">
+             
+              <td>
+                <ngx-skeleton-loader
+                  count="1"
+                  [theme]="{
+                    'border-radius': '5px',
+                    height: '10px',
+                    border: '1px solid white'
+                  }"
+                ></ngx-skeleton-loader>
+              </td>
+              <td>
+                <ngx-skeleton-loader
+                  count="1"
+                  [theme]="{
+                    'border-radius': '5px',
+                    height: '10px',
+                    border: '1px solid white'
+                  }"
+                ></ngx-skeleton-loader>
+              </td>
+            
+              
+            </tr>
+      
+      
+      
+    @for (order of orders.slice(0, 10); track order; let i = $index) {
+            <tr>
+              <td class="text-center">
+                <!-- <c-avatar [size]="'lg'" [src]="order.food_image" /> -->
+                <img onError="this.src='assets/images/supply.png'" [src]="order.food_image" alt="chat-user" style="height: 50px;width: 50px;" />
+              </td>
+              <td>
+                <div>{{ order.name }} </div>
+                <small class="text-medium-emphasis"> {{ order.description }}</small>
+                            </td>
+                
+              <td class="text-center">                 
+                <small class="text-medium-emphasis"> {{ order.cost }} {{this.api.getCurrecySymbol()}}</small>
+                  <div style="color: green; font-weight: bold">Available {{order.instock}} </div>
+              </td>
+             
+            
+            </tr>
+            }
+          </tbody>
+        </table>
+    </c-card>
+    }

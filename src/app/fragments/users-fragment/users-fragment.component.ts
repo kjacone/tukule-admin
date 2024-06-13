@@ -13,17 +13,21 @@ export class UsersFragmentComponent implements OnInit {
   users: any[] = [];
   dummy = Array(10);
   dummyUsers: any[] = [];
-  @Input() user: string;
-  constructor(private api: BackendService, private comm: CommonService) {}
+  @Input() user: any;
+  constructor(private api: BackendService, private comm: CommonService) {
+
+   
+    // this.getUsers();
+  }
   ngOnInit() {
-    console.log('TYPE:', this.user);
-    this.getUsers();
+   
   }
 
   getUsers() {
+    let me = this.comm.getCurrentRestaurant().restaurantCode;
     this.users = [];
     this.dummyUsers = [];
-    this.api.getSpecificItems('users', 'type', this.user).subscribe(
+    this.api.getSpecificItems('users', 'restaurantCode', me).subscribe(
       (data) => {
         this.dummy = [];
         console.log('users data', data);

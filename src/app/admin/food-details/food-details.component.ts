@@ -104,20 +104,20 @@ export class FoodDetailsComponent implements OnInit {
       name: this.name,
       uom: this.uom,
       category: this.category,
-      menu_name: this.menuName,
-      food_image: this.foodImage,
+      menuName: this.menuName,
+      foodImage: this.foodImage,
       description: this.description,
       quantity: this.qty,
       instock: this.qty,
-      ordered_quantity: 0,
+      orderedQuantity: 0,
       veg: true,
       cost: this.cost,
       discount: this.discount,
       reorder: this.reorder,
       tags: this.selectedTags,
-      supplys_used: this.formData,
+      supplysUsed: this.formData,
       accompaniments: this.selectedAccompaniments,
-      created_by: {
+      createdBy: {
         name: this.comm.getCurrentUser().user.fullname,
         uid: this.comm.getCurrentUser().user.uid,
       },
@@ -126,8 +126,7 @@ export class FoodDetailsComponent implements OnInit {
         uid: this.comm.getCurrentRestaurant().uid,
       },
       extras: [],
-      uid: this.comm.generateRandomUid(),
-      created_at: serverTimestamp(),
+      createdAt: serverTimestamp(),
     };
     console.log('param', param);
     this.api

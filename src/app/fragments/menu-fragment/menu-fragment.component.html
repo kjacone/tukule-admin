@@ -1,1 +1,41 @@
-<p>menu-fragment works!</p>
+<div class="container">
+
+ 
+
+  <c-row class="justify-content-md-center p-3">
+    <c-col><button cButton variant="outline" color="primary" size="sm" (click)="scrollCardsBack()">Back</button> </c-col>
+    <c-col xs="6"><th>Current Items Available</th></c-col>
+    <c-col> <button cButton variant="outline" color="secondary" size="sm" float-end (click)="scrollCards()">More</button></c-col>
+  </c-row>
+
+  <div class="list-container">
+    <div class="cards-container">
+      <c-card class="mb-4" [ngStyle]="{'max-width.px': 280}" *ngFor="let item of orders">
+        <c-row class="g-0">
+          <c-col [md]="4">
+            <img [cCardImg] src="{{ item.food_image }}">
+          </c-col>
+          <c-card-body cCol [md]="8">
+            <small class="text-medium-emphasis">{{ item.menu_name }} menu</small>
+            <tr>
+              <td>
+                <div>{{ item.name }} </div>
+                <div class="text-body-secondary text-nowrap">
+                  <span>
+                    {{ item.description }}
+                  </span>
+                </div>
+                
+              </td>
+            </tr>
+            <tr>
+              <td> <div style="color: green; font-weight: bold" > Qty:{{ item.quantity }}</div> </td>
+              <td>  <button cButton color="primary" variant="outline" (click)="add(item)" >+</button> </td>
+            </tr>
+            <small class="text-medium-emphasis">restaurant: {{item.restaurant.name}}</small>
+          </c-card-body>
+        </c-row>
+      </c-card>
+    </div>
+  </div>
+</div>

@@ -15,7 +15,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 
 
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { provideAuth, getAuth, connectAuthEmulator } from '@angular/fire/auth';
+import { provideAuth, getAuth, connectAuthEmulator ,Auth} from '@angular/fire/auth';
 import { provideFirestore, getFirestore, connectFirestoreEmulator } from '@angular/fire/firestore';
 import { provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular/fire/functions';
 import { provideMessaging, getMessaging } from '@angular/fire/messaging';
@@ -27,6 +27,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { MatGoogleMapsAutocompleteModule } from '@angular-material-extensions/google-maps-autocomplete';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 import {
   provideRouter,
@@ -58,19 +59,19 @@ export const appConfig: ApplicationConfig = {
       // AngularFirestore,
       AngularFireModule.initializeApp(environment.firebase),
       // AngularFireAuth,
-
-      provideFirebaseApp(() => initializeApp(environment.firebase)),
-      provideFirestore(() => getFirestore()),
-      provideAuth(() => getAuth()),
-      provideFunctions(() => getFunctions()),
-      provideStorage(() => getStorage()),
-      provideMessaging(() => getMessaging()),
+      Auth,
+      InfiniteScrollDirective,
       
       MatGoogleMapsAutocompleteModule.forRoot(environment.general.apiKey),
       NgMultiSelectDropDownModule.forRoot(),
       StarRatingModule.forRoot(),
     ),
-    
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => getFirestore()),
+    provideAuth(() => getAuth()),
+    provideFunctions(() => getFunctions()),
+    provideStorage(() => getStorage()),
+    provideMessaging(() => getMessaging()),
     provideRouter(
       routes,
       withRouterConfig({

@@ -10,7 +10,7 @@ import {
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Location } from '@angular/common';
 import PlaceResult = google.maps.places.PlaceResult;
-import { Restaurant } from 'src/app/services/models/models';
+import { AppUser, Restaurant } from 'src/app/services/models/models';
 import { serverTimestamp } from '@angular/fire/firestore';
 @Component({
   selector: 'app-restdetails',
@@ -57,7 +57,7 @@ export class RestdetailsComponent implements OnInit {
   dishPrice: any = '';
   time: any = '';
   cusine: any;
-   restCode:string;
+  restCode: string;
   email: any = '';
   openTime;
   closeTime;
@@ -71,6 +71,8 @@ export class RestdetailsComponent implements OnInit {
   reviews: any[] = [];
   cities: any[] = [];
   userImage: any;
+  user: any;
+idnumber: any;
   constructor(
     private route: ActivatedRoute,
     private api: BackendService,
@@ -79,9 +81,7 @@ export class RestdetailsComponent implements OnInit {
     private navCtrl: Location,
     private chMod: ChangeDetectorRef
   ) {
-    this.getCity();
-    this.getCommmons();
-    this.restCode = this.comm.generateRestaurantCode(this.name);
+   
   }
   onAutocompleteSelected(result: PlaceResult) {
     console.log('onAutocompleteSelected: ', result);
@@ -113,16 +113,26 @@ export class RestdetailsComponent implements OnInit {
     });
   }
   ngOnInit() {
-    this.route.queryParams.subscribe((data: any) => {
-      console.log('data=>', data);
+    this.route.params.subscribe((dat: any) => {
+      if (dat.user) {
+       const data = JSON.parse(dat.user);
+        this.email = data.email;
+        this.phone = data.phoneNumber;
+        this.fname = data.displayName.split(' ')[0] || '';
+        this.lname = data.displayName.split(' ')[1] || '';
+        this.userImage = data.photoURL
+        ;
+      }
 
-      this.new = !data || data.register === 'false' ? false : true;
+      this.new = !dat || dat.register === 'false' ? false : true;
       console.log(this.new);
-      if (data.hasOwnProperty('id')) {
-        this.id = data.id;
+
+      if (dat.hasOwnProperty('id')) {
+        this.id = dat.id;
         this.getVenue();
         this.dropdownList = [...this.dropdownList];
       } else {
+        console.log('else');
         this.selectedItems = [];
         this.dropdownSettings = {
           singleSelection: false,
@@ -134,7 +144,12 @@ export class RestdetailsComponent implements OnInit {
         };
       }
     });
+
+    this.getCity();
+    this.getCommmons();
+    
   }
+
   onItemSelect(item: any) {
     console.log(item);
   }
@@ -201,12 +216,12 @@ export class RestdetailsComponent implements OnInit {
         console.log(error);
       });
     this.api.getRestOrders(this.id).subscribe((data) => {
-      console.log('order->', data);
+      console.log('rest order->', data);
       this.totalOrders = [];
       if (data && data.length) {
         this.totalOrders = data;
         this.totalSales = 0;
-        data.forEach((element:any) => {
+        data.forEach((element: any) => {
           element.order = JSON.parse(element.order);
           this.totalSales = this.totalSales + parseFloat(element.total);
         });
@@ -244,7 +259,6 @@ export class RestdetailsComponent implements OnInit {
     this.longitude = address.geoLocation.longitude;
     console.log('=>', this.latitude);
   }
-
   updateVenue(): any {
     this.cusine = [];
     this.selectedItems.forEach((element) => {
@@ -314,11 +328,11 @@ export class RestdetailsComponent implements OnInit {
       this.comm.openSnackBar('Please add your cover image');
       return false;
     }
-    const param:Restaurant = {
-      uid: this.id,
+    const param: Restaurant = {
+  
       name: this.name,
       address: this.address,
-      descpritions: this.descritions,
+      description: this.descritions,
       lat: this.latitude,
       lng: this.longitude,
       cover: this.coverImage,
@@ -339,12 +353,12 @@ export class RestdetailsComponent implements OnInit {
         this.image5 ? this.image5 : '',
         this.image6 ? this.image6 : '',
       ],
-      created_at: serverTimestamp(),
+      createdAt: serverTimestamp(),
       restaurantCode: this.restCode,
       email: this.email,
       rating: 0,
       totalRating: 0,
-      owner:  {
+      owner: {
         uid: this.email,
         name: this.fname + ' ' + this.lname,
       },
@@ -375,6 +389,7 @@ export class RestdetailsComponent implements OnInit {
 
   create(): any {
     this.cusine = [];
+    this.restCode = this.comm.generateRestaurantCode(this.name);
     this.selectedItems.forEach((element) => {
       this.cusine.push(element.item_id);
     });
@@ -427,123 +442,108 @@ export class RestdetailsComponent implements OnInit {
       this.comm.openSnackBar('Please add your cover image');
       return false;
     }
+    console.log('we aare here');
     this.loading = true;
+    const param: AppUser = {
+      email: this.email,
+      fullName: this.fname + ' ' + this.lname,
+      coverImage: this.userImage,
+      restaurantCode: this.restCode,
+      fcmToken: '',
+      lat: '',
+      lng: '',
+      phone: this.phone,
+      status: 'active',
+      type: 'owner',
+      idnumber: this.idnumber,
+      current: 'active',
+      createdAt: serverTimestamp(),
+    }
     this.api
-      .checkEmail(this.email)
-      .then(
-        (datas: any) => {
-          if (!datas.length) {
-            this.api
-              .register(
-                this.email,
-                this.fname,
-                this.lname,
-                this.userImage,
-                'owner'
-              )
-              .then(
-                (data) => {
-                  if (data && data.uid) {
-                   
-                    const param:Restaurant = {
-                      uid: this.comm.generateRandomUid(),
-                      restaurantCode: this.restCode,
-                      email: this.email,
-                      name: this.name,
-                      address: this.address,
-                      descpritions: this.descritions,
-                      lat: this.latitude,
-                      lng: this.longitude,
-                      cover: this.coverImage,
-                      dishPrice: this.dishPrice,
-                      time: this.time,
-                      rating: 0,
-                      cusine: this.selectedItems,
-                      totalRating: 0,
-                      openTime: this.openTime,
-                      isClose: true,
-                      phone: this.phone,
-                      status: 'open',
-                      closeTime: this.closeTime,
-                      city: this.city,
-                      owner: {
-                        uid: data.uid,
-                        name: this.fname + ' ' + this.lname,
-                      },
-                      images: [
-                        this.image1 ? this.image1 : '',
-                        this.image2 ? this.image2 : '',
-                        this.image3 ? this.image3 : '',
-                        this.image4 ? this.image4 : '',
-                        this.image5 ? this.image5 : '',
-                        this.image6 ? this.image6 : '',
-                      ],
-                      created_at: serverTimestamp()
-                    };
-                    console.log('param', param);
-                    this.api
-                      .create('venue', param)
-                      .then(
-                        (data) => {
-                          this.loading = false;
-                          console.log(data);
-                          this.comm.openSnackBar(
-                            'Success Restaurant added successfully'
-                          );
-                          // TODO: use the new auth from firebase
-                          // this.api.sendNotification('Checkout New Restaurant ' + this.name, 'New Restaunrant Added').subscribe((data) => {
-                          //   console.log(data);
-                          //   this.success(this.api.translate('Notications sent'));
-                          // }, error => {
-                          //   console.log(error);
-                          //   this.error(this.api.translate('Something went wrong'));
-                          // });
-                          this.navCtrl.back();
-                        },
-                        (error) => {
-                          this.loading = false;
-                          console.log(error);
-                          this.error(error);
-                        }
-                      )
-                      .catch((error) => {
-                        this.loading = false;
-                        console.log(error);
-                        this.error(error);
-                      });
-                  }
-                },
-                (error) => {
-                  console.log(error);
-                  this.loading = false;
-                  this.error(`${error}`);
-                }
-              )
-              .catch((error) => {
-                console.log(error);
+    .register(param)
+    .then(
+      (data) => {
+        console.log('register',data);
+        if (data && data.id) {
+          const param: Restaurant = {
+            restaurantCode: this.restCode,
+            email: this.email,
+            name: this.name,
+            address: this.address,
+            description: this.descritions,
+            lat: this.latitude,
+            lng: this.longitude,
+            cover: this.coverImage,
+            dishPrice: this.dishPrice,
+            time: this.time,
+            rating: 0,
+            cusine: this.selectedItems,
+            totalRating: 0,
+            openTime: this.openTime,
+            isClose: true,
+            phone: this.phone,
+            status: 'open',
+            closeTime: this.closeTime,
+            city: this.city,
+            owner: {
+              uid: data.id,
+              name: this.fname + ' ' + this.lname,
+            },
+            images: [
+              this.image1 ? this.image1 : '',
+              this.image2 ? this.image2 : '',
+              this.image3 ? this.image3 : '',
+              this.image4 ? this.image4 : '',
+              this.image5 ? this.image5 : '',
+              this.image6 ? this.image6 : '',
+            ],
+            createdAt: serverTimestamp(),
+          };
+          console.log('param', param);
+          this.api
+            .create('venue', param)
+            .then(
+              (data) => {
                 this.loading = false;
-                this.error(`${error}`);
-              });
-          } else {
-            this.loading = false;
-            this.error(
-              'this email id is already register, please use another to login'
-            );
-          }
-        },
-        (error) => {
-          console.log(error);
-          this.loading = false;
-          this.error('Something went wrong');
+                console.log(data);
+                this.comm.openSnackBar(
+                  'Success Restaurant added successfully'
+                );
+                // TODO: use the new auth from firebase
+                // this.api.sendNotification('Checkout New Restaurant ' + this.name, 'New Restaunrant Added').subscribe((data) => {
+                //   console.log(data);
+                //   this.success(this.api.translate('Notications sent'));
+                // }, error => {
+                //   console.log(error);
+                //   this.error(this.api.translate('Something went wrong'));
+                // });
+                this.navCtrl.back();
+              },
+              (error) => {
+                this.loading = false;
+                console.log(error);
+                this.error(error);
+              }
+            )
+            .catch((error) => {
+              this.loading = false;
+              console.log(error);
+              this.error(error);
+            });
         }
-      )
-      .catch((error) => {
+      },
+      (error) => {
         console.log(error);
         this.loading = false;
-        this.error('Something went wrong');
-      });
+        this.error(`${error}`);
+      }
+    )
+    .catch((error) => {
+      console.log(error);
+      this.loading = false;
+      this.error(`${error}`);
+    });
   }
-
   error(message) {
     this.comm.openSnackBar(message);
   }
